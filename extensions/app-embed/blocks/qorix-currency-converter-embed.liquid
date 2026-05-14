@@ -549,7 +549,7 @@
 
     const getBaseAmountForPriceElement = (priceElement) => {
       const storedBaseAmountValue = priceElement.getAttribute(convertedBaseAmountAttribute);
-      const moneyFormatAmountValue = priceElement.getAttribute(priceAmountAttribute);
+      const moneyFormatAmountValue = priceElement.getAttribute(priceAmountAttribute).replace(/[^0-9.\-]+/g, '');
       const storedBaseAmount = Number.parseFloat(storedBaseAmountValue);
       const moneyFormatAmount = Number.parseFloat(moneyFormatAmountValue);
 
