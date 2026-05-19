@@ -13,37 +13,37 @@
   }
 </style>
 
-{% assign appData = app.metafields.currency_converter %}
-{% assign active_currencies = appData.currency_general.value.activeCurrencies %}
-{% assign iso_currencies = appData.iso_currencies.value %}
-{% assign displayMode = appData.currency_design.value.displayMode %}
-{% assign flagStyle = appData.currency_design.value.flagStyle %}
-{% assign showCurrencyNameOnHover = appData.currency_design.value.behavior.showCurrencyNameOnHover %}
-{% assign darkModeSupport = appData.currency_design.value.behavior.darkModeSupport %}
-{% assign locationDetection = appData.currency_general.value.locationDetection %}
-{% assign priceDisplayFormat = appData.currency_general.value.priceDisplayFormat %}
-{% assign restrictedAutoSwitch = appData.currency_general.value.restrictedAutoSwitch %}
-{% assign fallBackCurrency = appData.currency_general.value.fallBackCurrency %}
-{% assign defaultCurrency = appData.settings_general.value.storeDefaults.currency %}
-{% assign appBehavior = appData.settings_general.value.appBehavior %}
-{% assign showOriginalPriceOnHover = appData.currency_design.value.behavior.showOriginalPriceOnHover %}
-{% assign themeCustomisation = appData.settings_widget.value.themeCustomisation %}
-{% assign visibility = appData.settings_widget.value.visibility %}
-{% assign customSelector = appData.settings_widget.value.customSelector %}
-{% assign horizontal = appData.settings_widget.value.offsetFromEdge.horizontal %}
-{% assign vertical = appData.settings_widget.value.offsetFromEdge.vertical %}
-{% assign position = appData.settings_widget.value.position %}
+{% assign app_data = app.metafields.currency_converter %}
+{% assign active_currencies = app_data.currency_general.value.activeCurrencies %}
+{% assign iso_currencies = app_data.iso_currencies.value %}
+{% assign display_mode = app_data.currency_design.value.displayMode %}
+{% assign flag_style = app_data.currency_design.value.flagStyle %}
+{% assign show_currency_name_on_hover = app_data.currency_design.value.behavior.showCurrencyNameOnHover %}
+{% assign dark_mode_support = app_data.currency_design.value.behavior.darkModeSupport %}
+{% assign location_detection = app_data.currency_general.value.locationDetection %}
+{% assign price_display_format = app_data.currency_general.value.priceDisplayFormat %}
+{% assign restricted_auto_switch = app_data.currency_general.value.restrictedAutoSwitch %}
+{% assign fall_back_currency = app_data.currency_general.value.fallBackCurrency %}
+{% assign default_currency = app_data.settings_general.value.storeDefaults.currency %}
+{% assign app_behavior = app_data.settings_general.value.appBehavior %}
+{% assign show_original_price_on_hover = app_data.currency_design.value.behavior.showOriginalPriceOnHover %}
+{% assign theme_customisation = app_data.settings_widget.value.themeCustomisation %}
+{% assign visibility = app_data.settings_widget.value.visibility %}
+{% assign custom_selector = app_data.settings_widget.value.customSelector %}
+{% assign horizontal = app_data.settings_widget.value.offsetFromEdge.horizontal %}
+{% assign vertical = app_data.settings_widget.value.offsetFromEdge.vertical %}
+{% assign position = app_data.settings_widget.value.position %}
 
-{% if appData.settings_general.value != blank and appData.settings_widget.value != blank and appData.currency_general.value != blank and appData.currency_design.value != blank and appData.iso_currencies.value != blank %}
-<div id="currency-converter" class="{% if customSelector != empty %}inject-widget{% else %}floating-widget {{ position }}{% endif %} ">
+{% if app_data.settings_general.value != blank and app_data.settings_widget.value != blank and app_data.currency_general.value != blank and app_data.currency_design.value != blank and app_data.iso_currencies.value != blank %}
+<div id="currency-converter" class="{% if custom_selector != empty %}inject-widget{% else %}floating-widget {{ position }}{% endif %} ">
   <div id="currency-converter-widget">
-    {% assign iso_currency = iso_currencies[defaultCurrency] %}
+    {% assign iso_currency = iso_currencies[default_currency] %}
     <div class="currency-widget__button" data-currency-name="{{ iso_currency.name }}" data-currency-code="{{ iso_currency.currencyCode }}">
-      {% if flagStyle != "no_flag" %}
-        <img src="https://flags.sifatahmed.info/{{ iso_currency.stateCode }}/flag.{% if flagStyle == "2d_flag" %}png{% else %}gif{% endif %}" alt="{% if displayMode == "currency_code" %}{{ iso_currency.currencyCode }}{% else %}{{ iso_currency.name }}{% endif %}" width="24" height="16">
+      {% if flag_style != "no_flag" %}
+        <img src="https://flags.sifatahmed.info/{{ iso_currency.stateCode }}/flag.{% if flag_style == "2d_flag" %}png{% else %}gif{% endif %}" alt="{% if display_mode == "currency_code" %}{{ iso_currency.currencyCode }}{% else %}{{ iso_currency.name }}{% endif %}" width="24" height="16">
       {% endif %}
       <span>
-        {% if displayMode == "currency_code" %}
+        {% if display_mode == "currency_code" %}
           {{ iso_currency.currencyCode }}
         {% else %}
           {{ iso_currency.name }}
@@ -54,17 +54,17 @@
       </svg>
     </div>
     <div class="currency-widget__dropdown">
-      <ul data-base-currency="{{ defaultCurrency }}" data-base-rate="1" data-display-format="{{ priceDisplayFormat }}">
+      <ul data-base-currency="{{ default_currency }}" data-base-rate="1" data-display-format="{{ price_display_format }}">
         {% for tcurrency in active_currencies %}
           {% assign iso_currency = iso_currencies[tcurrency] %}
-          <li {% if tcurrency == defaultCurrency %}class="active"{% endif %} data-currency="{{ tcurrency }}" data-symbol="{{ iso_currency.symbol }}" data-name="{{ iso_currency.name }}" data-code="{{ iso_currency.currencyCode }}"
+          <li {% if tcurrency == default_currency %}class="active"{% endif %} data-currency="{{ tcurrency }}" data-symbol="{{ iso_currency.symbol }}" data-name="{{ iso_currency.name }}" data-code="{{ iso_currency.currencyCode }}"
             data-rate="1"
           >
-            {% if flagStyle != "no_flag" %}
-              <img src="https://flags.sifatahmed.info/{{ iso_currency.stateCode }}/flag.{% if flagStyle == "2d_flag" %}png{% else %}gif{% endif %}" alt="{% if displayMode == "currency_code" %}{{ iso_currency.currencyCode }}{% else %}{{ iso_currency.name }}{% endif %}" width="24" height="16">
+            {% if flag_style != "no_flag" %}
+              <img src="https://flags.sifatahmed.info/{{ iso_currency.stateCode }}/flag.{% if flag_style == "2d_flag" %}png{% else %}gif{% endif %}" alt="{% if display_mode == "currency_code" %}{{ iso_currency.currencyCode }}{% else %}{{ iso_currency.name }}{% endif %}" width="24" height="16">
             {% endif %}
             <span>
-              {% if displayMode == "currency_code" %}
+              {% if display_mode == "currency_code" %}
                 {{ iso_currency.currencyCode }}
               {% else %}
                 {{ iso_currency.name }}
@@ -89,25 +89,25 @@
         button.classList.remove('active');
       }
     });
-    const defaultCurrency = `{{ defaultCurrency }}`.toUpperCase();
+    const defaultCurrency = `{{ default_currency }}`.toUpperCase();
     const localStorageKey = `currencyExchangeRates${defaultCurrency}`;
     const exchangeRateApiUrl = `https://v6.exchangerate-api.com/v6/8eeeef10c87f3e890c874cbb/latest/${defaultCurrency}`;
-    const exchangeRateFrequency = {{ appBehavior.exchangeRateFrequency | json }};
-    const isCurrencyEnabled = {{ appBehavior.enableCurrency | json }};
-    const shouldRememberVisitorPreference = {{ appBehavior.enableVisitorPreference | json }};
-    const shouldShowWidgetOnAllPages = {{ appBehavior.enableWidgetOnAllPages | json }};
-    const shouldDetectLocation = {{ locationDetection | json }};
-    const shouldShowCurrencyNameOnHover = {{ showCurrencyNameOnHover | json }};
-    const shouldShowOriginalPriceOnHover = {{ showOriginalPriceOnHover | json }};
-    const restrictedAutoSwitch = {{ restrictedAutoSwitch | json }};
-    const fallbackCurrency = `{{ fallBackCurrency }}`.toUpperCase();
-    const defaultCurrencySymbol = {{ iso_currencies[defaultCurrency].symbol | json }};
-    const defaultCurrencyCode = `{{ iso_currencies[defaultCurrency].currencyCode }}`.toUpperCase();
-    const customSelector = {{ customSelector | json }};
+    const exchangeRateFrequency = {{ app_behavior.exchangeRateFrequency | json }};
+    const isCurrencyEnabled = {{ app_behavior.enableCurrency | json }};
+    const shouldRememberVisitorPreference = {{ app_behavior.enableVisitorPreference | json }};
+    const shouldShowWidgetOnAllPages = {{ app_behavior.enableWidgetOnAllPages | json }};
+    const shouldDetectLocation = {{ location_detection | json }};
+    const shouldShowCurrencyNameOnHover = {{ show_currency_name_on_hover | json }};
+    const shouldShowOriginalPriceOnHover = {{ show_original_price_on_hover | json }};
+    const restrictedAutoSwitch = {{ restricted_auto_switch | json }};
+    const fallbackCurrency = `{{ fall_back_currency }}`.toUpperCase();
+    const defaultCurrencySymbol = {{ iso_currencies[default_currency].symbol | json }};
+    const defaultCurrencyCode = `{{ iso_currencies[default_currency].currencyCode }}`.toUpperCase();
+    const customSelector = {{ custom_selector | json }};
     const floatingPositionClass = `{{ position }}`;
     const selectedCurrencyStorageKey = 'currencyConverterSelectedCurrency';
     const selectedCurrencyVersionStorageKey = 'currencyConverterSelectedCurrencyVersion';
-    const visitorPreferenceVersion = {{ appBehavior.visitorPreferenceVersion | default: 1 | json }};
+    const visitorPreferenceVersion = {{ app_behavior.visitorPreferenceVersion | default: 1 | json }};
     const geolocationProxyUrl = '/apps/currency-converter/geolocation';
     const exchangeSyncProxyUrl = '/apps/currency-converter/exchange-sync';
     const analyticsProxyUrl = '/apps/currency-converter/analytics';
@@ -836,12 +836,12 @@
 </script>
 <style>
   #currency-converter {
-    --w-bg: {{ themeCustomisation.backgroundColor }};
-    --w-border-color: {{ themeCustomisation.borderColor }};
-    --w-border-radius: {{ themeCustomisation.borderRadius }}px;
-    --w-text-color: {{ themeCustomisation.textColor }};
-    --w-hover-color: {{ themeCustomisation.hoverColor }};
-    --w-bg-hover: {{ themeCustomisation.hoverBackground }};
+    --w-bg: {{ theme_customisation.backgroundColor }};
+    --w-border-color: {{ theme_customisation.borderColor }};
+    --w-border-radius: {{ theme_customisation.borderRadius }}px;
+    --w-text-color: {{ theme_customisation.textColor }};
+    --w-hover-color: {{ theme_customisation.hoverColor }};
+    --w-bg-hover: {{ theme_customisation.hoverBackground }};
     --w-dark-bg: #181818;
     --w-dark-border-color: #3a3a3a;
     --w-dark-text-color: #f5f5f5;
@@ -851,7 +851,7 @@
     --vertical: {{ vertical }}px;
   }
 
-  {% if darkModeSupport %}
+  {% if dark_mode_support %}
     @media (prefers-color-scheme: dark) {
       #currency-converter {
         --w-bg: var(--w-dark-bg);
