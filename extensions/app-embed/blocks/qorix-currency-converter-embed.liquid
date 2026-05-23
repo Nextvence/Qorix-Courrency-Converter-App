@@ -1,5 +1,5 @@
 <style>
-  #currency-converter{
+  [data-currency-converter-root]{
     opacity: 0;
     animation-name: fadeIn;
     animation-duration: 0.01s;
@@ -35,20 +35,22 @@
 {% assign position = app_data.settings_widget.value.position %}
 
 {% if app_data.settings_general.value != blank and app_data.settings_widget.value != blank and app_data.currency_general.value != blank and app_data.currency_design.value != blank and app_data.iso_currencies.value != blank %}
-<div id="currency-converter" class="{% if custom_selector != empty %}inject-widget{% else %}floating-widget {{ position }}{% endif %} ">
-  <div id="currency-converter-widget">
+<div data-currency-converter-root class="{% if custom_selector != empty %}inject-widget{% else %}floating-widget {{ position }}{% endif %} ">
+  <div data-currency-converter-widget>
     {% assign iso_currency = iso_currencies[default_currency] %}
     <div class="currency-widget__button" data-currency-name="{{ iso_currency.name }}" data-currency-code="{{ iso_currency.currencyCode }}">
-      {% if flag_style != "no_flag" %}
-        <img src="https://flags.sifatahmed.info/{{ iso_currency.stateCode }}/flag.{% if flag_style == "2d_flag" %}png{% else %}gif{% endif %}" alt="{% if display_mode == "currency_code" %}{{ iso_currency.currencyCode }}{% else %}{{ iso_currency.name }}{% endif %}" width="24" height="16">
-      {% endif %}
-      <span>
-        {% if display_mode == "currency_code" %}
-          {{ iso_currency.currencyCode }}
-        {% else %}
-          {{ iso_currency.name }}
+      <div class="currency-widget__button-content">
+        {% if flag_style != "no_flag" %}
+          <img src="https://flags.sifatahmed.info/{{ iso_currency.stateCode }}/flag.{% if flag_style == "2d_flag" %}png{% else %}gif{% endif %}" alt="{% if display_mode == "currency_code" %}{{ iso_currency.currencyCode }}{% else %}{{ iso_currency.name }}{% endif %}" width="24" height="16">
         {% endif %}
-      </span>
+        <span>
+          {% if display_mode == "currency_code" %}
+            {{ iso_currency.currencyCode }}
+          {% else %}
+            {{ iso_currency.name }}
+          {% endif %}
+        </span>
+      </div>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M6 9L12 15L18 9" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -80,15 +82,17 @@
 <script>
   window.CurrencyAppConfig = {{ app.metafields.currency_converter | json }};
   document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector("body").addEventListener("click", (event) => {
-      const dropdown = document.querySelector('#currency-converter-widget .currency-widget__dropdown');
-      const button = document.querySelector('#currency-converter-widget .currency-widget__button');
+    let widgetInstances = [];
 
-      if (!dropdown.contains(event.target) && !button.contains(event.target)) {
-        dropdown.classList.remove('active');
-        button.classList.remove('active');
-      }
+    document.querySelector("body").addEventListener("click", (event) => {
+      widgetInstances.forEach((instance) => {
+        if (!instance.widget.contains(event.target)) {
+          instance.dropdown.classList.remove('active');
+          instance.button.classList.remove('active');
+        }
+      });
     });
+
     const defaultCurrency = `{{ default_currency }}`.toUpperCase();
     const localStorageKey = `currencyExchangeRates${defaultCurrency}`;
     const exchangeRateApiUrl = `https://v6.exchangerate-api.com/v6/8eeeef10c87f3e890c874cbb/latest/${defaultCurrency}`;
@@ -125,65 +129,142 @@
     const cacheMaxAgeInHours = exchangeRateFrequencyMap[exchangeRateFrequency] || 24;
     let currentSelectionSource = 'default';
 
-    const widgetContainer = document.querySelector('#currency-converter');
-    const widget = document.querySelector('#currency-converter-widget');
-    const button = widget ? widget.querySelector('.currency-widget__button') : null;
-    const dropdown = widget ? widget.querySelector('.currency-widget__dropdown') : null;
-    const currencyList = dropdown ? dropdown.querySelector('ul[data-base-currency]') : null;
-    const lists = currencyList ? currencyList.querySelectorAll('li[data-currency]') : [];
-    const priceDisplayFormat = currencyList ? currencyList.getAttribute('data-display-format') : 'with_currency_code';
+    const widgetContainerSelector = '[data-currency-converter-root]';
+    const widgetSelector = '[data-currency-converter-widget]';
+    const templateWidgetContainer = document.querySelector(widgetContainerSelector);
+    const templateWidget = templateWidgetContainer ? templateWidgetContainer.querySelector(widgetSelector) : null;
+    const templateCurrencyList = templateWidget ? templateWidget.querySelector('ul[data-base-currency]') : null;
+    const templateLists = templateCurrencyList ? templateCurrencyList.querySelectorAll('li[data-currency]') : [];
+    const priceDisplayFormat = templateCurrencyList ? templateCurrencyList.getAttribute('data-display-format') : 'with_currency_code';
 
-    if (!widgetContainer || !widget || !button || !dropdown || !currencyList || !lists.length) {
+    if (!templateWidgetContainer || !templateWidget || !templateCurrencyList || !templateLists.length) {
       console.warn('Currency converter widget could not be initialized.');
       return;
     }
 
-    const hideWidget = () => {
-      widgetContainer.setAttribute('hidden', 'hidden');
-      widgetContainer.style.display = 'none';
+    const hideWidget = (container) => {
+      container.setAttribute('hidden', 'hidden');
+      container.style.display = 'none';
     };
 
-    const showWidget = () => {
-      widgetContainer.removeAttribute('hidden');
-      widgetContainer.style.removeProperty('display');
+    const showWidget = (container) => {
+      container.removeAttribute('hidden');
+      container.style.removeProperty('display');
     };
 
-    const placeWidget = () => {
-      const trimmedSelector = typeof customSelector === 'string' ? customSelector.trim() : '';
-      const shouldInjectIntoSelector = trimmedSelector.length > 0;
+    const getConfiguredCustomSelectors = () => {
+      if (typeof customSelector !== 'string') {
+        return [];
+      }
 
-      showWidget();
+      return customSelector
+        .split(',')
+        .map((selector) => selector.trim())
+        .filter(Boolean);
+    };
+
+    const getCustomSelectorTargets = (selectors) => {
+      const targets = [];
+      const seenTargets = new Set();
+
+      selectors.forEach((selector) => {
+        try {
+          document.querySelectorAll(selector).forEach((targetElement) => {
+            if (
+              !(targetElement instanceof Element) ||
+              seenTargets.has(targetElement) ||
+              targetElement === templateWidgetContainer ||
+              templateWidgetContainer.contains(targetElement)
+            ) {
+              return;
+            }
+
+            seenTargets.add(targetElement);
+            targets.push(targetElement);
+          });
+        } catch (error) {
+          console.warn(`Currency converter custom selector is invalid: ${selector}`, error);
+        }
+      });
+
+      return targets;
+    };
+
+    const createWidgetInstance = (container) => {
+      const widget = container.querySelector(widgetSelector);
+      const button = widget ? widget.querySelector('.currency-widget__button') : null;
+      const dropdown = widget ? widget.querySelector('.currency-widget__dropdown') : null;
+      const currencyList = dropdown ? dropdown.querySelector('ul[data-base-currency]') : null;
+      const lists = currencyList ? Array.from(currencyList.querySelectorAll('li[data-currency]')) : [];
+
+      if (!widget || !button || !dropdown || !currencyList || !lists.length) {
+        return null;
+      }
+
+      return {
+        container,
+        widget,
+        button,
+        dropdown,
+        currencyList,
+        lists
+      };
+    };
+
+    const placeWidgets = () => {
+      const selectors = getConfiguredCustomSelectors();
+      const shouldInjectIntoSelector = selectors.length > 0;
+
+      showWidget(templateWidgetContainer);
 
       if (!shouldInjectIntoSelector) {
-        widgetContainer.className = `floating-widget ${floatingPositionClass}`;
-        return true;
+        templateWidgetContainer.className = `floating-widget ${floatingPositionClass}`;
+        return [templateWidgetContainer];
       }
 
-      const targetElement = document.querySelector(trimmedSelector);
+      const targetElements = getCustomSelectorTargets(selectors);
 
-      if (!targetElement) {
-        console.warn(`Currency converter custom selector not found: ${trimmedSelector}`);
+      if (!targetElements.length) {
+        console.warn(`Currency converter custom selector not found: ${selectors.join(', ')}`);
 
         if (shouldShowWidgetOnAllPages) {
-          widgetContainer.className = `floating-widget ${floatingPositionClass}`;
-          return true;
+          templateWidgetContainer.className = `floating-widget ${floatingPositionClass}`;
+          return [templateWidgetContainer];
         }
 
-        hideWidget();
-        return false;
+        hideWidget(templateWidgetContainer);
+        return [];
       }
 
-      targetElement.appendChild(widgetContainer);
-      widgetContainer.className = 'inject-widget';
-      return true;
+      return targetElements.map((targetElement, index) => {
+        const container = index === 0 ? templateWidgetContainer : templateWidgetContainer.cloneNode(true);
+
+        container.className = 'inject-widget';
+        container.setAttribute('data-currency-converter-instance', String(index + 1));
+        showWidget(container);
+        targetElement.appendChild(container);
+
+        return container;
+      });
     };
 
     if (!isCurrencyEnabled) {
-      hideWidget();
+      hideWidget(templateWidgetContainer);
       return;
     }
 
-    if (!placeWidget()) {
+    const placedWidgetContainers = placeWidgets();
+
+    if (!placedWidgetContainers.length) {
+      return;
+    }
+
+    widgetInstances = placedWidgetContainers
+      .map((container) => createWidgetInstance(container))
+      .filter(Boolean);
+
+    if (!widgetInstances.length) {
+      console.warn('Currency converter widget instances could not be initialized.');
       return;
     }
 
@@ -329,29 +410,43 @@
         return;
       }
 
-      lists.forEach((listItem) => {
-        const currency = listItem.getAttribute('data-currency');
-        const normalizedCurrency = currency ? currency.toUpperCase() : '';
+      widgetInstances.forEach((instance) => {
+        instance.lists.forEach((listItem) => {
+          const currency = listItem.getAttribute('data-currency');
+          const normalizedCurrency = currency ? currency.toUpperCase() : '';
 
-        if (normalizedCurrency && rates[normalizedCurrency]) {
-          listItem.setAttribute('data-rate', rates[normalizedCurrency]);
-        }
+          if (normalizedCurrency && rates[normalizedCurrency]) {
+            listItem.setAttribute('data-rate', rates[normalizedCurrency]);
+          }
+        });
       });
     };
 
-    const getCurrencyListItem = (currencyCode) => {
-      return Array.from(lists).find((listItem) => {
+    const getPrimaryWidgetInstance = () => widgetInstances[0] || null;
+
+    const getCurrencyListItem = (currencyCode, instance = getPrimaryWidgetInstance()) => {
+      if (!currencyCode || !instance) {
+        return null;
+      }
+
+      const normalizedCurrencyCode = String(currencyCode).toUpperCase();
+
+      return instance.lists.find((listItem) => {
         const itemCurrency = listItem.getAttribute('data-currency');
-        return itemCurrency && itemCurrency.toUpperCase() === currencyCode;
+        return itemCurrency && itemCurrency.toUpperCase() === normalizedCurrencyCode;
       }) || null;
     };
 
-    const getDefaultCurrencyListItem = () => {
-      return getCurrencyListItem(defaultCurrency) || dropdown.querySelector('li.active') || lists[0] || null;
+    const getDefaultCurrencyListItem = (instance = getPrimaryWidgetInstance()) => {
+      if (!instance) {
+        return null;
+      }
+
+      return getCurrencyListItem(defaultCurrency, instance) || instance.dropdown.querySelector('li.active') || instance.lists[0] || null;
     };
 
-    const getFallbackCurrencyListItem = () => {
-      return getCurrencyListItem(fallbackCurrency) || getDefaultCurrencyListItem();
+    const getFallbackCurrencyListItem = (instance = getPrimaryWidgetInstance()) => {
+      return getCurrencyListItem(fallbackCurrency, instance) || getDefaultCurrencyListItem(instance);
     };
 
     const getRestrictedAutoSwitchCurrencies = () => {
@@ -569,7 +664,13 @@
     };
 
     const getCurrentSelectedCurrencyListItem = () => {
-      return dropdown.querySelector('li.active') || getDefaultCurrencyListItem();
+      const primaryWidgetInstance = getPrimaryWidgetInstance();
+
+      if (!primaryWidgetInstance) {
+        return null;
+      }
+
+      return primaryWidgetInstance.dropdown.querySelector('li.active') || getDefaultCurrencyListItem(primaryWidgetInstance);
     };
 
     let currentCurrencySelection = null;
@@ -713,6 +814,66 @@
       return false;
     };
 
+    const resetDropdownInlinePosition = (dropdown) => {
+      dropdown.style.removeProperty('top');
+      dropdown.style.removeProperty('right');
+      dropdown.style.removeProperty('bottom');
+      dropdown.style.removeProperty('left');
+      dropdown.style.removeProperty('transform-origin');
+    };
+
+    const positionInjectedDropdown = (instance) => {
+      if (!instance.container.classList.contains('inject-widget')) {
+        return;
+      }
+
+      const gap = 4;
+      const viewportPadding = 12;
+      const dropdown = instance.dropdown;
+      const wasActive = dropdown.classList.contains('active');
+
+      resetDropdownInlinePosition(dropdown);
+
+      if (!wasActive) {
+        dropdown.style.visibility = 'hidden';
+        dropdown.style.pointerEvents = 'none';
+        dropdown.classList.add('active');
+      }
+
+      const buttonRect = instance.button.getBoundingClientRect();
+      const dropdownList = dropdown.querySelector('ul');
+      const dropdownHeight =
+        dropdown.offsetHeight ||
+        dropdownList?.offsetHeight ||
+        dropdownList?.clientHeight ||
+        Math.min(dropdownList?.scrollHeight || 0, 200);
+      const dropdownWidth =
+        dropdown.offsetWidth ||
+        dropdownList?.offsetWidth ||
+        dropdownList?.clientWidth ||
+        dropdown.scrollWidth ||
+        dropdownList?.scrollWidth ||
+        0;
+      const spaceBelow = window.innerHeight - buttonRect.bottom;
+      const spaceAbove = buttonRect.top;
+      const wouldOverflowBottom = buttonRect.bottom + gap + dropdownHeight > window.innerHeight - viewportPadding;
+      const shouldOpenUp = wouldOverflowBottom && (spaceAbove >= dropdownHeight + gap || spaceAbove > spaceBelow);
+      const wouldOverflowRight = buttonRect.left + dropdownWidth > window.innerWidth - viewportPadding;
+      const wouldOverflowLeftWhenRightAligned = buttonRect.right - dropdownWidth < viewportPadding;
+
+      dropdown.style.top = shouldOpenUp ? 'auto' : `calc(100% + ${gap}px)`;
+      dropdown.style.bottom = shouldOpenUp ? `calc(100% + ${gap}px)` : 'auto';
+      dropdown.style.transformOrigin = shouldOpenUp ? 'bottom' : 'top';
+      dropdown.style.left = wouldOverflowRight && !wouldOverflowLeftWhenRightAligned ? 'auto' : '0';
+      dropdown.style.right = wouldOverflowRight && !wouldOverflowLeftWhenRightAligned ? '0' : 'auto';
+
+      if (!wasActive) {
+        dropdown.classList.remove('active');
+        dropdown.style.removeProperty('visibility');
+        dropdown.style.removeProperty('pointer-events');
+      }
+    };
+
     const applyCurrencySelection = (listItem, options = {}) => {
       if (!listItem) {
         return;
@@ -720,45 +881,61 @@
 
       const { persistPreference = true, source = 'manual', trackEvent = true } = options;
 
-      const rate = listItem.getAttribute('data-rate');
-      const img = listItem.querySelector('img');
+      const selectedCurrencyCode = listItem.getAttribute('data-currency') || '';
+      const normalizedCurrencyCode = selectedCurrencyCode.toUpperCase();
+      const selectedListItem = getCurrencyListItem(normalizedCurrencyCode) || listItem;
+      const rate = selectedListItem.getAttribute('data-rate');
+      const img = selectedListItem.querySelector('img');
       const imgSource = img ? img.getAttribute('src') : null;
-      const label = listItem.querySelector('span');
+      const label = selectedListItem.querySelector('span');
       const text = label ? label.textContent : '';
-      const dataSymbol = listItem.getAttribute('data-symbol') || '';
-      const currencyCode = listItem.getAttribute('data-currency') || '';
-      const currencyName = listItem.getAttribute('data-name') || '';
-      const buttonImage = button.querySelector('img');
-      const buttonLabel = button.querySelector('span');
+      const dataSymbol = selectedListItem.getAttribute('data-symbol') || '';
+      const currencyName = selectedListItem.getAttribute('data-name') || '';
 
-      lists.forEach((item) => {
-        item.classList.toggle('active', item === listItem);
+      if (!normalizedCurrencyCode) {
+        return;
+      }
+
+      widgetInstances.forEach((instance) => {
+        const instanceListItem = getCurrencyListItem(normalizedCurrencyCode, instance);
+        const displayListItem = instanceListItem || selectedListItem;
+        const instanceImg = displayListItem.querySelector('img');
+        const instanceImgSource = instanceImg ? instanceImg.getAttribute('src') : imgSource;
+        const instanceLabel = displayListItem.querySelector('span');
+        const instanceText = instanceLabel ? instanceLabel.textContent : text;
+        const instanceCurrencyName = displayListItem.getAttribute('data-name') || currencyName;
+        const buttonImage = instance.button.querySelector('img');
+        const buttonLabel = instance.button.querySelector('span');
+
+        instance.lists.forEach((item) => {
+          item.classList.toggle('active', item === instanceListItem);
+        });
+
+        if (instanceImgSource && buttonImage) {
+          buttonImage.setAttribute('src', instanceImgSource);
+        }
+
+        if (buttonLabel) {
+          buttonLabel.textContent = instanceText;
+        }
+
+        instance.button.setAttribute('data-currency-name', instanceCurrencyName);
+        instance.button.setAttribute('data-currency-code', normalizedCurrencyCode);
+
+        instance.dropdown.classList.remove('active');
+        instance.button.classList.remove('active');
       });
-
-      if (imgSource && buttonImage) {
-        buttonImage.setAttribute('src', imgSource);
-      }
-
-      if (buttonLabel) {
-        buttonLabel.textContent = text;
-      }
 
       currentCurrencySelection = {
         rate,
         symbol: dataSymbol,
-        currencyCode
+        currencyCode: normalizedCurrencyCode
       };
 
-      button.setAttribute('data-currency-name', currencyName);
-      button.setAttribute('data-currency-code', currencyCode.toUpperCase());
-
-      dropdown.classList.remove('active');
-      button.classList.remove('active');
-
-      updateDisplayedPrices(rate, dataSymbol, currencyCode);
+      updateDisplayedPrices(rate, dataSymbol, normalizedCurrencyCode);
 
       if (persistPreference && shouldRememberVisitorPreference) {
-        storeCurrencyPreference(currencyCode);
+        storeCurrencyPreference(normalizedCurrencyCode);
       } else if (!shouldRememberVisitorPreference) {
         clearStoredCurrencyPreference();
       }
@@ -767,27 +944,40 @@
         if (source === 'manual') {
           trackAnalyticsEvent({
             eventType: 'currency_switch_manual',
-            currencyCode: currencyCode.toUpperCase(),
+            currencyCode: normalizedCurrencyCode,
             source
           });
         } else {
           trackAnalyticsEvent({
             eventType: 'currency_switch_auto',
-            currencyCode: currencyCode.toUpperCase(),
+            currencyCode: normalizedCurrencyCode,
             source
           });
         }
       }
     };
 
-    button.addEventListener('click', () => {
-      dropdown.classList.toggle('active');
-      button.classList.toggle('active');
-    });
+    widgetInstances.forEach((instance) => {
+      instance.button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const shouldOpenDropdown = !instance.dropdown.classList.contains('active');
 
-    lists.forEach((listItem) => {
-      listItem.addEventListener('click', function () {
-        applyCurrencySelection(this, { persistPreference: true, source: 'manual' });
+        widgetInstances.forEach((otherInstance) => {
+          otherInstance.dropdown.classList.remove('active');
+          otherInstance.button.classList.remove('active');
+        });
+
+        if (shouldOpenDropdown) {
+          positionInjectedDropdown(instance);
+          instance.dropdown.classList.add('active');
+          instance.button.classList.add('active');
+        }
+      });
+
+      instance.lists.forEach((listItem) => {
+        listItem.addEventListener('click', function () {
+          applyCurrencySelection(this, { persistPreference: true, source: 'manual' });
+        });
       });
     });
 
@@ -835,7 +1025,7 @@
   });
 </script>
 <style>
-  #currency-converter {
+  [data-currency-converter-root] {
     --w-bg: {{ theme_customisation.backgroundColor }};
     --w-border-color: {{ theme_customisation.borderColor }};
     --w-border-radius: {{ theme_customisation.borderRadius }}px;
@@ -853,7 +1043,7 @@
 
   {% if dark_mode_support %}
     @media (prefers-color-scheme: dark) {
-      #currency-converter {
+      [data-currency-converter-root] {
         --w-bg: var(--w-dark-bg);
         --w-border-color: var(--w-dark-border-color);
         --w-text-color: var(--w-dark-text-color);
@@ -865,7 +1055,7 @@
 
   {% unless visibility.enableOnDesktop %}
     @media screen and (min-width: 769px) {
-      #currency-converter {
+      [data-currency-converter-root] {
         display: none !important;
       }
     }
@@ -873,7 +1063,7 @@
 
   {% unless visibility.enableOnMobile %}
     @media screen and (max-width: 768px) {
-      #currency-converter {
+      [data-currency-converter-root] {
         display: none !important;
       }
     }
