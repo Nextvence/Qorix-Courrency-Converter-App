@@ -61,9 +61,12 @@ export default function Position({ data, handleChange }) {
                 <CustomSection background="#F5F7F9">
                     <s-stack paddingBlockEnd="small">
                         <s-heading>Custom selector</s-heading>
-                        <s-paragraph color="subdued">Inject into any element using a CSS selector</s-paragraph>
+                        <s-paragraph color="subdued">Inject into any element using a CSS selector. </s-paragraph>
                     </s-stack>
                     <s-text-field placeholder="(e.g. #custom-selector)" value={customSelector} onInput={handleCustomSelectorInput} />
+                    <s-stack paddingBlockStart="small">
+                        <s-paragraph color="subdued">Use commas (,) to inject widgets into multiple selectors.</s-paragraph>
+                    </s-stack>
                 </CustomSection>
             </s-stack>
         </div >

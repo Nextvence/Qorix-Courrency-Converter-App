@@ -1,113 +1,114 @@
-#currency-converter * {
+[data-currency-converter-root] * {
     background: unset !important;
     background-color: unset !important;
     color: unset !important;
     color: var(--w-text-color) !important;
 }
-#currency-converter.floating-widget {
+[data-currency-converter-root].floating-widget {
     position: fixed;
     z-index: 1000;
     max-width: fit-content;
     max-height: fit-content;
 }
-#currency-converter * img {
+[data-currency-converter-root] * img {
     aspect-ratio: unset !important;
     width: 24px !important;
     height: 16px !important;
 }
 
 /* positioning for floating widget started */
-#currency-converter:not(.inject-widget).top_left{
+[data-currency-converter-root]:not(.inject-widget).top_left{
     top: var(--vertical);
     left: var(--horizontal);
 }
-#currency-converter:not(.inject-widget).top_center{
+[data-currency-converter-root]:not(.inject-widget).top_center{
     top: var(--vertical);
     left: 50%;
     transform: translateX(-50%) translateX(var(--horizontal));
 }
-#currency-converter:not(.inject-widget).top_right{
+[data-currency-converter-root]:not(.inject-widget).top_right{
     top: var(--vertical);
     right: var(--horizontal);
 }
-#currency-converter:not(.inject-widget).middle_left{
+[data-currency-converter-root]:not(.inject-widget).middle_left{
     top: 50%;
     transform: translateY(-50%) translateY(var(--vertical));
     left: var(--horizontal);
 }
-#currency-converter:not(.inject-widget).middle_right{
+[data-currency-converter-root]:not(.inject-widget).middle_right{
     top: 50%;
     transform: translateY(-50%) translateY(var(--vertical));
     right: var(--horizontal);
 }
-#currency-converter:not(.inject-widget).bottom_left{
+[data-currency-converter-root]:not(.inject-widget).bottom_left{
     bottom: var(--vertical);
     left: var(--horizontal);
 }
-#currency-converter:not(.inject-widget).bottom_center{
+[data-currency-converter-root]:not(.inject-widget).bottom_center{
     bottom: var(--vertical);
     left: 50%;
     transform: translateX(-50%) translateX(var(--horizontal));
 }
-#currency-converter:not(.inject-widget).bottom_right{
+[data-currency-converter-root]:not(.inject-widget).bottom_right{
     bottom: var(--vertical);
     right: var(--horizontal);
 }
 
-#currency-converter:not(.inject-widget).top_left .currency-widget__dropdown{
+[data-currency-converter-root]:not(.inject-widget).top_left .currency-widget__dropdown{
     top: calc(100% + 2px);
     left: 0;
     transform-origin: top;
 }
-#currency-converter:not(.inject-widget).top_center .currency-widget__dropdown{
+[data-currency-converter-root]:not(.inject-widget).top_center .currency-widget__dropdown{
     top: calc(100% + 2px);
     left: 0;
     transform-origin: top;
 }
-#currency-converter:not(.inject-widget).top_right .currency-widget__dropdown{
+[data-currency-converter-root]:not(.inject-widget).top_right .currency-widget__dropdown{
     top: calc(100% + 2px);
     right: 0;
     transform-origin: top;
 }
-#currency-converter:not(.inject-widget).middle_left .currency-widget__dropdown{
+[data-currency-converter-root]:not(.inject-widget).middle_left .currency-widget__dropdown{
     bottom: calc(100% + 2px);
     left: 0;
     transform-origin: bottom;
 }
-#currency-converter:not(.inject-widget).middle_right .currency-widget__dropdown{
+[data-currency-converter-root]:not(.inject-widget).middle_right .currency-widget__dropdown{
     bottom: calc(100% + 2px);
     right: 0;
     transform-origin: bottom;
 }
-#currency-converter:not(.inject-widget).bottom_left .currency-widget__dropdown{
+[data-currency-converter-root]:not(.inject-widget).bottom_left .currency-widget__dropdown{
     bottom: calc(100% + 2px);
     left: 0;
     transform-origin: bottom;
 }
-#currency-converter:not(.inject-widget).bottom_center .currency-widget__dropdown{
+[data-currency-converter-root]:not(.inject-widget).bottom_center .currency-widget__dropdown{
     bottom: calc(100% + 2px);
     left: 0;
     transform-origin: bottom;
 }
-#currency-converter:not(.inject-widget).bottom_right .currency-widget__dropdown{
+[data-currency-converter-root]:not(.inject-widget).bottom_right .currency-widget__dropdown{
     bottom: calc(100% + 2px);
     right: 0;
     transform-origin: bottom;
 }
-#currency-converter.inject-widget .currency-widget__dropdown{
+[data-currency-converter-root].inject-widget .currency-widget__dropdown{
     top: calc(100% + 2px);
     right: 0;
     transform-origin: top;
 }
 /* positioning for floating widget end */
 
-#currency-converter-widget {
+[data-currency-converter-widget] {
     position: relative;
+    width: fit-content;
 }
-#currency-converter-widget .currency-widget__button {
+[data-currency-converter-widget] .currency-widget__button {
     display: flex;
     align-items: center;
-    padding: 8px 7px;
+    padding: 3px 7px;
     background-color: var(--w-bg) !important;   
     cursor: pointer;
     gap: 8px;
@@ -115,21 +116,29 @@
     overflow: hidden;
     border: 1px solid var(--w-border-color) !important;
     border-radius: var(--w-border-radius) !important;
+    justify-content: space-between;
+    min-width: 130px;
 }
-#currency-converter-widget .currency-widget__button > span {
+[data-currency-converter-widget] .currency-widget__button .currency-widget__button-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+[data-currency-converter-widget] .currency-widget__button > span {
     line-height: 1;
     margin-right: 10px;
 }
-#currency-converter-widget .currency-widget__button > svg {
+[data-currency-converter-widget] .currency-widget__button > svg {
     transition: 0.1s ease-in-out;
 }
-#currency-converter-widget .currency-widget__button > svg path {
+[data-currency-converter-widget] .currency-widget__button > svg path {
     stroke: var(--w-text-color) !important;
 }
-#currency-converter-widget .currency-widget__button.active svg {
+[data-currency-converter-widget] .currency-widget__button.active svg {
     transform: rotate(180deg);
 }
-#currency-converter-widget .currency-widget__dropdown{
+[data-currency-converter-widget] .currency-widget__dropdown{
     position: absolute;
     background-color: var(--w-bg) !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -142,11 +151,11 @@
     display: flex;
     max-width: fit-content;
 }
-#currency-converter-widget .currency-widget__dropdown.active {
+[data-currency-converter-widget] .currency-widget__dropdown.active {
     opacity: 1;
     transform: scaleY(1);
 }
-#currency-converter-widget .currency-widget__dropdown ul {
+[data-currency-converter-widget] .currency-widget__dropdown ul {
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -159,7 +168,7 @@
     max-height: 200px;
     overflow-y: auto;
 }
-#currency-converter-widget .currency-widget__dropdown ul li{
+[data-currency-converter-widget] .currency-widget__dropdown ul li{
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -174,15 +183,15 @@
     background-color: var(--w-bg) !important;
     color: var(--w-text-color) !important;
 }
-#currency-converter-widget .currency-widget__dropdown ul li,
-#currency-converter-widget .currency-widget__dropdown ul li span{
+[data-currency-converter-widget] .currency-widget__dropdown ul li,
+[data-currency-converter-widget] .currency-widget__dropdown ul li span{
     white-space: nowrap;
 }
-#currency-converter-widget .currency-widget__dropdown ul li:hover,
-#currency-converter-widget .currency-widget__dropdown ul li.active{
+[data-currency-converter-widget] .currency-widget__dropdown ul li:hover,
+[data-currency-converter-widget] .currency-widget__dropdown ul li.active{
     background-color: var(--w-bg-hover) !important;
 }
 
-#currency-converter-widget .currency-widget__dropdown ul li:hover span{
+[data-currency-converter-widget] .currency-widget__dropdown ul li:hover span{
     color: var(--w-hover-color) !important;
 }
