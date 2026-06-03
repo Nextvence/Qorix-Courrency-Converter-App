@@ -47,3 +47,15 @@ model AnalyticsEvent {
   @@index([shop, createdAt])
   @@index([shop, eventType, createdAt])
 }
+
+model ShopBillingPolicy {
+   id             Int   @id @default(autoincrement())
+  shop           String   @unique
+  subscriptionId String?
+  plan           String
+  planHandle     String?
+  status         String
+  trialEndsAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

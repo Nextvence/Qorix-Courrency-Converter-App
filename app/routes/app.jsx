@@ -17,6 +17,7 @@ export default function App() {
       <s-app-nav>
         <s-link href="/app">Dashboard</s-link>
         <s-link href="/app/currency">Currency</s-link>
+        <s-link href="/app/manage-plan">Manage Plan</s-link>
         <s-link href="/app/settings">Settings</s-link>
       </s-app-nav>
       <Outlet />

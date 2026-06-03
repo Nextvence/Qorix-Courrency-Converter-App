@@ -3,7 +3,6 @@ import CustomGridSection from "../../../essentials/CustomGridSection";
 import { useState } from "react";
 import FlagStyles from "../../../essentials/elements/FlagStyles";
 import flagStyleOptions from "../../../../assets/data/flag_style_options.json";
-
 export default function FlagStyle({ handleChange, data }) {
     const { flagStyle } = data.designSettings;
     const [selectedFlagStyle, setSelectedFlagStyle] = useState(flagStyle);
@@ -36,8 +35,9 @@ export default function FlagStyle({ handleChange, data }) {
                                     ${selectedFlagStyle === option.value ? "selected" : ""}
                                 `}>
                                     <FlagStyles style={option.value} />
-                                    <s-text>
-                                        {option.label}
+                                    <s-text >
+                                        {option.label}                                       
+                                      
                                     </s-text>
                                 </div>
                             </s-clickable>
