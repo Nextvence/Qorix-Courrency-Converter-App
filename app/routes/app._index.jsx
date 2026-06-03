@@ -15,10 +15,13 @@ import { getEmbedStatusForShop } from "../utils/embed.server";
 import { getCurrencyFormats } from "../utils/currency.server";
 import { ensureAppMetafields } from "../utils/metafields.server";
 import { useEffect, useState } from "react";
+import { getBillingMode } from "../utils/hybridBilling.server";
 
 export const loader = async ({ request }) => {
   const { getAnalyticsSummary } = await import("../utils/analytics.server");
   const { admin } = await authenticate.admin(request);
+  const billing = await getBillingMode(request);
+ console.log("Billing info in loader:", billing);
   const { metafieldMap } = await ensureAppMetafields(admin, ["settings_general", "currency_general"]);
   const response = await admin.graphql(
     `#graphql
@@ -38,6 +41,9 @@ export const loader = async ({ request }) => {
   const currencyFormats = await getCurrencyFormats(admin);
   const json = await response.json();
   const shopDomain = json.data.shop.myshopifyDomain;
+  const storeHandle = shopDomain.replace(".myshopify.com", "");
+  const billingUrl = `https://admin.shopify.com/store/${storeHandle}/charges/qorix-currency-converter/pricing_plans`;
+
   const currentWeekStart = new Date();
   currentWeekStart.setHours(0, 0, 0, 0);
   currentWeekStart.setDate(currentWeekStart.getDate() - 6);
@@ -67,6 +73,12 @@ export const loader = async ({ request }) => {
   }
 
   return {
+    activePlan: billing.hasActiveSubscription ? { name: billing.planDisplayName } : null,
+    billingUrl,
+    billingMode: billing.mode,
+    billingPlan: billing.plan,
+    billingPlanDisplayName: billing.planDisplayName,
+    billingStatus: billing.status,
     shop: json.data.shop,
     embedStatus: status,
     currencyFormats: currencyFormats.shop,
@@ -75,6 +87,11 @@ export const loader = async ({ request }) => {
       enableCurrency: Boolean(metafieldMap.settings_general?.appBehavior?.enableCurrency),
       activeCurrenciesCount: metafieldMap.currency_general?.activeCurrencies?.length || 0,
       locationDetection: Boolean(metafieldMap.currency_general?.locationDetection),
+      billingMode: billing.mode,
+      hasActiveSubscription: billing.hasActiveSubscription,
+      isPaidPlan: billing.isPaid,
+      isStandardPlan: billing.isStandard,
+      isProPlan: billing.isPro,
     },
   };
 }
@@ -135,7 +152,6 @@ export const action = async ({ request }) => {
 };
 
 export default function Index() {
-  // page loader start
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
 
@@ -144,14 +160,11 @@ export default function Index() {
       <Loader />
     )
   }
-  // page loader end
 
-  // default loaders data start
   const { appName, apiKey } = useRouteLoaderData("routes/app");
   const loaderData = useLoaderData();
   const revalidator = useRevalidator();
   const toggleFetcher = useFetcher();
-  // default loaders data end
 
   const [isAppEnabled, setIsAppEnabled] = useState(loaderData.embedStatus == "ENABLED");
   const activationUrl = `https://${loaderData?.shop?.myshopifyDomain}/admin/themes/current/editor?context=apps&template=index&activateAppId=${apiKey}/qorix-currency-converter-embed`;
@@ -191,12 +204,13 @@ export default function Index() {
       { method: "post" }
     );
   };
-
+  const planName = loaderData?.billingPlanDisplayName || "Free Plan";
   return (
     <s-page heading={`${appName}`}>
       <s-stack direction="inline" alignItems="center" justifyContent="space-between" gap="base" paddingBlockEnd="base">
         <Text as="h2">Welcome, {loaderData?.shop?.name}</Text>
         <s-stack direction="inline" gap="small">
+          <s-badge tone="success">Your plan: {planName}</s-badge>
           <s-button variant="primary" icon="store" href={`https://${loaderData?.shop?.primaryDomain?.host}`} target="_blank">View store</s-button>
           {/* <s-button variant="secondary">Your plan: Free</s-button> */}
         </s-stack>
