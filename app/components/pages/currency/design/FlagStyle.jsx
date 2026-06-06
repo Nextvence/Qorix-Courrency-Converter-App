@@ -1,11 +1,29 @@
 import CustomSection from "../../../essentials/CustomSection";
 import CustomGridSection from "../../../essentials/CustomGridSection";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FlagStyles from "../../../essentials/elements/FlagStyles";
 import flagStyleOptions from "../../../../assets/data/flag_style_options.json";
+import paidPlan from "../../../essentials/paidPlan";
+import { useRouteLoaderData } from "react-router";
+
+
 export default function FlagStyle({ handleChange, data }) {
     const { flagStyle } = data.designSettings;
+    const { billing } = useRouteLoaderData("routes/app");
+    console.log("billing to golobal function", billing);
     const [selectedFlagStyle, setSelectedFlagStyle] = useState(flagStyle);
+
+    useEffect(() => {
+        if (billing?.isFree && selectedFlagStyle === "3d_flag") {
+            setSelectedFlagStyle("2d_flag");
+            handleChange({
+                target: "design",
+                subTarget: "flagStyle",
+                value: "2d_flag",
+            });
+        }
+    }, [billing?.isFree, selectedFlagStyle, handleChange]);
+
     const handleFlagStyleChange = (e) => {
         setSelectedFlagStyle(e.value);
         handleChange(
@@ -16,6 +34,8 @@ export default function FlagStyle({ handleChange, data }) {
             }
         );
     }
+
+    console.log("Selected flag style:",flagStyle);
     return (
         <CustomGridSection
             heading="Flag style"
@@ -28,16 +48,21 @@ export default function FlagStyle({ handleChange, data }) {
                             <s-clickable
                                 borderRadius='base'
                                 overflow='hidden'
+                                disabled={option.value === "3d_flag" && billing?.isFree}
+                                key={option.value}
                                 onClick={() => handleFlagStyleChange(option)}
                             >
                                 <div className={`
                                     flag-style-option 
+                                    
                                     ${selectedFlagStyle === option.value ? "selected" : ""}
                                 `}>
                                     <FlagStyles style={option.value} />
-                                    <s-text >
-                                        {option.label}                                       
-                                      
+                                    <s-text>
+                                        {option.label} 
+                                        {billing?.isFree && option.value === "3d_flag" &&  paidPlan(true
+                                        )}
+                                     {/* {option.value === "3d_flag" &&   paidPlan()} */}
                                     </s-text>
                                 </div>
                             </s-clickable>

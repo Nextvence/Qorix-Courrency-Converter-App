@@ -1,10 +1,12 @@
 import Button from "../elements/Button"
 import CustomSection from "../../../../essentials/CustomSection"
 import { useState } from "react"
-
+import {useRouteLoaderData} from "react-router"
+import paidPlan from "../../../../essentials/paidPlan"
 export default function Position({ data, handleChange }) {
     const [position, setPosition] = useState(data.widgetSettings.position);
     const [customSelector, setCustomSelector] = useState(data.widgetSettings.customSelector);
+    const { billing } = useRouteLoaderData("routes/app");
     const handlePositionChange = (event) => {
         setPosition(event);
         handleChange({
@@ -60,10 +62,10 @@ export default function Position({ data, handleChange }) {
             <s-stack paddingBlockStart="small">
                 <CustomSection background="#F5F7F9">
                     <s-stack paddingBlockEnd="small">
-                        <s-heading>Custom selector</s-heading>
-                        <s-paragraph color="subdued">Inject into any element using a CSS selector. </s-paragraph>
+                        <s-heading>Custom selector {billing?.isFree &&  paidPlan(false)}</s-heading>
+                        <s-paragraph color="subdued">Inject into any element using a CSS selector.  </s-paragraph>
                     </s-stack>
-                    <s-text-field placeholder="(e.g. #custom-selector)" value={customSelector} onInput={handleCustomSelectorInput} />
+                    <s-text-field disabled={billing?.isFree} placeholder="(e.g. #custom-selector)" value={billing?.isFree ? "" : customSelector} onInput={handleCustomSelectorInput} />
                     <s-stack paddingBlockStart="small">
                         <s-paragraph color="subdued">Use commas (,) to inject widgets into multiple selectors.</s-paragraph>
                     </s-stack>
