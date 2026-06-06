@@ -12,7 +12,7 @@ export async function defaultSettingsGeneral(admin) {
       enableCurrency: true,
       enableVisitorPreference: true,
       enableWidgetOnAllPages: true,
-      exchangeRateFrequency: "12_hours",
+      exchangeRateFrequency: "24_hours",
       visitorPreferenceVersion: 1,
     },
   };

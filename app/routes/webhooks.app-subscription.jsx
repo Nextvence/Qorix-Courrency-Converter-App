@@ -3,11 +3,12 @@ import prisma from "../db.server";
 
 export const action = async ({ request }) => {
   try {
-    const { shop, payload } = await authenticate.webhook(request);
+    const { shop, payload , admin } = await authenticate.webhook(request);
 
     const subscription = payload?.app_subscription || payload;
+    
+    console.log("Received subscription webhook with payload:", admin);
 
-    console.log("Received subscription webhook with payload:", payload);
     // Validate required fields
     if (!subscription?.status || !subscription?.name) {
       console.warn("Missing required subscription fields:", subscription);

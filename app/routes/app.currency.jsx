@@ -97,7 +97,7 @@ export const action = async ({ request }) => {
 
 export default function Currency() {
     const shopify = useAppBridge();
-    const { appName } = useRouteLoaderData("routes/app");
+    const { appName, billing } = useRouteLoaderData("routes/app");
     const loaderData = useLoaderData();
     const { currentAppInstallationId, currencyGeneral, currencyDesign, settingsGeneral, exchangeMeta } = loaderData;
     const fetcher = useFetcher();
@@ -109,6 +109,29 @@ export default function Currency() {
     const [generalSettings, setGeneralSettings] = useState(currencyGeneral);
     const [designSettings, setDesignSettings] = useState(currencyDesign);
     const [appSettings, setAppSettings] = useState(settingsGeneral);
+
+    useEffect(() => {
+        if (billing?.isFree && designSettings?.flagStyle === "3d_flag") {
+            const updatedDesignSettings = {
+                ...designSettings,
+                flagStyle: "2d_flag",
+            };
+
+            setDesignSettings(updatedDesignSettings);
+            fetcher.submit(
+                {
+                    designSettings: JSON.stringify(updatedDesignSettings),
+                    currentAppInstallationId,
+                },
+                { method: "post" }
+            );
+            shopify.saveBar.hide('save-bar');
+            shopify.toast.show({
+                message: "Premium flag style removed because your plan is Free",
+                duration: 3000,
+            });
+        }
+    }, [billing?.isFree, designSettings, currentAppInstallationId, fetcher, shopify]);
 
     const handleSave = () => {
         fetcher.submit(
