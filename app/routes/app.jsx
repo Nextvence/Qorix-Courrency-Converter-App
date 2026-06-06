@@ -13,7 +13,7 @@ export const loader = async ({ request }) => {
     appName: "Qorix Currency Converter",
     billing,
   };
-};
+}; 
 
 export default function App() {
   const { apiKey } = useLoaderData();
