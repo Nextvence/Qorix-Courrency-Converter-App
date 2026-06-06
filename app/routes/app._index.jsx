@@ -208,8 +208,8 @@ export default function Index() {
     <s-page heading={`${appName}`}>
       <s-stack direction="inline" alignItems="center" justifyContent="space-between" gap="base" paddingBlockEnd="base">
         <Text as="h2">Welcome, {loaderData?.shop?.name}</Text>
-        <s-stack direction="inline" gap="small">
-          <s-badge tone="success">Your plan: {planName}</s-badge>
+        <s-stack direction="inline" gap="small" alignItems="center" justifyContent="space-between" >
+          <s-badge tone="success">Your Plan: {planName}</s-badge>
           <s-button variant="primary" icon="store" href={`https://${loaderData?.shop?.primaryDomain?.host}`} target="_blank">View store</s-button>
           {/* <s-button variant="secondary">Your plan: Free</s-button> */}
         </s-stack>

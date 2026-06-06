@@ -1,5 +1,4 @@
 export default function paidPlan(status) {
-    console.log("paid plan status", status);
     return (
        <div style={{ display: "inline-flex", alignItems: "center" }}>
   <span
