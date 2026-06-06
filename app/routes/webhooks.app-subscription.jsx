@@ -7,7 +7,6 @@ export const action = async ({ request }) => {
 
     const subscription = payload?.app_subscription || payload;
     
-    console.log("Received subscription webhook with payload:", admin);
 
     // Validate required fields
     if (!subscription?.status || !subscription?.name) {
@@ -37,7 +36,7 @@ export const action = async ({ request }) => {
       },
     });
 
-    console.log("Upserted subscription record in database:", result);
+    // console.log("Upserted subscription record in database:", result);
     return new Response("OK", { status: 200 });
   } catch (error) {
     console.error("Webhook error:", error);

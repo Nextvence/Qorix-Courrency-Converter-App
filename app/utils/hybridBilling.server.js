@@ -40,7 +40,7 @@ export async function getBillingMode(request) {
 
   // 2. Shopify (truth)
   const shopify = await getShopifyActivePlan(request);
-  console.log("Shopify subscription info:", shopify);
+  // console.log("Shopify subscription info:", shopify);
   // 3. Sync DB if mismatch
   if (
     dbBilling &&

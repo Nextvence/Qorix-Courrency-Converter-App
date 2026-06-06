@@ -210,9 +210,9 @@ export default function Settings() {
     const prevIsFreeRef = useRef(false);
     useEffect(() => {
         if (billing?.isFree && !prevIsFreeRef.current) {
-            console.log("Plan is free, resetting settings to default");
+       
             if (currentAppInstallationId) {
-                console.log("Plan is free, resetting settings to default ggggggg");
+         
                 handleResetAllSettings();
             }
             prevIsFreeRef.current = true;
