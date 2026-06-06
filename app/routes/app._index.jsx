@@ -5,7 +5,7 @@ import AppEmbedStatus from "../components/essentials/AppEmbedStatus.jsx";
 import Analytics from "../components/essentials/Analytics.jsx";
 import FAQ from "../components/pages/dashboard/FAQ.jsx";
 import Help from "../components/pages/dashboard/Help.jsx";
-import { useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
+import { redirect, useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
 import { useNavigation } from "react-router";
 import { useRevalidator } from "react-router";
 import Loader from "../components/essentials/Loader.jsx";
@@ -21,7 +21,7 @@ export const loader = async ({ request }) => {
   const { getAnalyticsSummary } = await import("../utils/analytics.server");
   const { admin } = await authenticate.admin(request);
   const billing = await getBillingMode(request);
- console.log("Billing info in loader:", billing);
+
   const { metafieldMap } = await ensureAppMetafields(admin, ["settings_general", "currency_general"]);
   const response = await admin.graphql(
     `#graphql
@@ -36,13 +36,15 @@ export const loader = async ({ request }) => {
       }
     }`,
   );
-
+console.log("Billing info in loader:", billing);
+if (billing.status !== "ACTIVE") {
+  const { search } = new URL(request.url);
+  return redirect(`/app/manage-plan${search}`);
+}
   const status = await getEmbedStatusForShop(admin, "qorix-currency-converter-embed");
   const currencyFormats = await getCurrencyFormats(admin);
   const json = await response.json();
   const shopDomain = json.data.shop.myshopifyDomain;
-  const storeHandle = shopDomain.replace(".myshopify.com", "");
-  const billingUrl = `https://admin.shopify.com/store/${storeHandle}/charges/qorix-currency-converter/pricing_plans`;
 
   const currentWeekStart = new Date();
   currentWeekStart.setHours(0, 0, 0, 0);
@@ -74,7 +76,7 @@ export const loader = async ({ request }) => {
 
   return {
     activePlan: billing.hasActiveSubscription ? { name: billing.planDisplayName } : null,
-    billingUrl,
+    
     billingMode: billing.mode,
     billingPlan: billing.plan,
     billingPlanDisplayName: billing.planDisplayName,
@@ -87,11 +89,8 @@ export const loader = async ({ request }) => {
       enableCurrency: Boolean(metafieldMap.settings_general?.appBehavior?.enableCurrency),
       activeCurrenciesCount: metafieldMap.currency_general?.activeCurrencies?.length || 0,
       locationDetection: Boolean(metafieldMap.currency_general?.locationDetection),
-      billingMode: billing.mode,
-      hasActiveSubscription: billing.hasActiveSubscription,
-      isPaidPlan: billing.isPaid,
-      isStandardPlan: billing.isStandard,
-      isProPlan: billing.isPro,
+  
+      
     },
   };
 }

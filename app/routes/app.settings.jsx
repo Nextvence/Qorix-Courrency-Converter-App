@@ -1,6 +1,6 @@
 import { useRouteLoaderData, useNavigation, useLoaderData, useFetcher, useActionData } from "react-router";
 import { Text } from "@shopify/polaris";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Loader from "../components/essentials/Loader";
 import TabButton from "../components/essentials/TabButton";
 import CustomSection from "../components/essentials/CustomSection";
@@ -18,7 +18,6 @@ import {
 import { defaultSettingsGeneral } from "../utils/store-default.server";
 import { ensureAppMetafields } from "../utils/metafields.server";
 import { getCurrencyFormats } from "../utils/currency.server";
-
 export const loader = async ({ request }) => {
     const { admin } = await authenticate.admin(request);
     
@@ -137,14 +136,13 @@ export const action = async ({ request }) => {
 };
 
 export default function Settings() {
-    const { appName } = useRouteLoaderData("routes/app");
+    const { appName,billing } = useRouteLoaderData("routes/app");
     const loaderData = useLoaderData();
     const actionData = useActionData();
     const { shop, currentAppInstallationId, settingsGeneral, settingsWidget, exchangeMeta, currencyFormats } = loaderData;
     const fetcher = useFetcher();
     const [activeTab, setActiveTab] = useState("general");
-    const shopify = useAppBridge();
-
+    const shopify = useAppBridge()
     function showSaveBar() {
         shopify.saveBar.show('save-bar');
     }
@@ -207,6 +205,21 @@ export default function Settings() {
             duration: 2000,
         });
     };
+
+    // Auto-reset when plan becomes free, including initial free load
+    const prevIsFreeRef = useRef(false);
+    useEffect(() => {
+        if (billing?.isFree && !prevIsFreeRef.current) {
+            console.log("Plan is free, resetting settings to default");
+            if (currentAppInstallationId) {
+                console.log("Plan is free, resetting settings to default ggggggg");
+                handleResetAllSettings();
+            }
+            prevIsFreeRef.current = true;
+        } else if (!billing?.isFree) {
+            prevIsFreeRef.current = false;
+        }
+    }, [billing?.isFree, currentAppInstallationId]);
 
     useEffect(() => {
         if(fetcher.data) {

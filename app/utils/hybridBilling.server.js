@@ -40,7 +40,7 @@ export async function getBillingMode(request) {
 
   // 2. Shopify (truth)
   const shopify = await getShopifyActivePlan(request);
-
+  console.log("Shopify subscription info:", shopify);
   // 3. Sync DB if mismatch
   if (
     dbBilling &&
@@ -59,6 +59,8 @@ export async function getBillingMode(request) {
   // 4. FINAL DECISION
   const hasActiveSubscription = shopify.activeStatus === "ACTIVE" && shopify.activePlan;
   const mode = hasActiveSubscription ? normalizePlanMode(shopify.activePlan) : "FREE";
+// temporarily disable plan differentiation until we have multiple plans to avoid confusion, will re-enable once we have more than 1 plan
+// const mode = hasActiveSubscription ? normalizePlanMode("Standard Plan") : "FREE";
   const finalPlan = hasActiveSubscription ? shopify.activePlan : PLAN_NAMES.FREE;
   const finalStatus = hasActiveSubscription ? "ACTIVE" : "FREE";
   const isPaid = mode === "STANDARD" || mode === "PRO";
