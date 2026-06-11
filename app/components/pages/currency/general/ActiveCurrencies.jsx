@@ -14,6 +14,10 @@ export default function ActiveCurrencies({ data, handleChange }) {
   const [searchQuery, setSearchQuery] = useState("");
   const { billing } = useRouteLoaderData("routes/app");
   const isFreePlan = billing?.isFree;
+  
+  // Default currency for free plan
+  const DEFAULT_CURRENCY = "usd";
+  const MAX_FREE_PLAN_CURRENCIES = 4; // 1 default + 3 additional
 
   // handling open search modal & input start
   const handleAddCurrencyInput = (e) => {
@@ -24,28 +28,51 @@ export default function ActiveCurrencies({ data, handleChange }) {
 
   // handling add currency start
   const handleAddCurrency = (currency) => {
-    // Free plan-only default selected currencies will be allowed, so if user try to add new currency then just return without doing anything
-    // if (isFreePlan) {
-    //   return;
-    // }
-    setActiveCurrencies([...activeCurrencies, currency]);
+    // Free plan - enforce maximum 4 currencies (1 default + 3 additional)
+    if (isFreePlan && activeCurrencies.length >= MAX_FREE_PLAN_CURRENCIES) {
+      return;
+    }
+
+    const newCurrencies = [...activeCurrencies, currency];
+    setActiveCurrencies(newCurrencies);
     handleChange({
       target: "general",
       subTarget: "activeCurrencies",
-      value: [...activeCurrencies, currency],
+      value: newCurrencies,
     });
   };
   // handling add currency end
 
   // handling remove currency start
   const handleRemoveCurrency = (currency) => {
-    setActiveCurrencies(activeCurrencies.filter((item) => item !== currency));
+    // Prevent removing the last currency entirely
+    if (activeCurrencies.length <= 1) {
+      return;
+    }
+
+    const updated = activeCurrencies.filter((item) => item !== currency);
+    setActiveCurrencies(updated);
     handleChange({
       target: "general",
       subTarget: "activeCurrencies",
-      value: activeCurrencies.filter((item) => item !== currency),
+      value: updated,
     });
   };
+  // Auto-adjust currencies when switching to free plan
+  useEffect(() => {
+    if (isFreePlan && activeCurrencies.length > MAX_FREE_PLAN_CURRENCIES) {
+      // Keep only the first 4 currencies in the order selected
+      const adjusted = activeCurrencies.slice(0, MAX_FREE_PLAN_CURRENCIES);
+      
+      setActiveCurrencies(adjusted);
+      handleChange({
+        target: "general",
+        subTarget: "activeCurrencies",
+        value: adjusted,
+      });
+    }
+  }, [isFreePlan]);
+
   useEffect(() => {
     const body = document.querySelector("body");
     const handleClickOutside = (event) => {
@@ -118,6 +145,7 @@ export default function ActiveCurrencies({ data, handleChange }) {
                 onRemove={() => handleRemoveCurrency(currency)}
               >
                 {currencies[currency].name} ({currencies[currency].code})
+                {isFreePlan && currency === DEFAULT_CURRENCY && " (Default)"}
               </s-clickable-chip>
             ))}
           </div>
@@ -147,7 +175,7 @@ export default function ActiveCurrencies({ data, handleChange }) {
               >
                 <span>
                   {isFreePlan
-                    ? `Free Plan : ${activeCurrencies.length} Selected Currencies`
+                    ? `Free Plan : 1 Default + ${activeCurrencies.length - 1} Additional (Max 4 Total) - ${activeCurrencies.length} Selected`
                     : `Select ${activeCurrencies.length} of ${Object.keys(currencies).length} currencies`}
                 </span>
                 {!isFreePlan && (
@@ -176,9 +204,15 @@ export default function ActiveCurrencies({ data, handleChange }) {
                           .includes(searchQuery.toLowerCase())),
                   )
                   .map(([key, value]) => {
-                    // Free plan-only
+                    // Free plan-only restrictions
+                    const isDefaultCurrency = key === DEFAULT_CURRENCY;
+                    const isAlreadySelected = activeCurrencies.includes(key);
+                    const canAddMore =
+                      activeCurrencies.length < MAX_FREE_PLAN_CURRENCIES;
                     const isDisabled =
-                      isFreePlan && !activeCurrencies.includes(key);
+                      isFreePlan &&
+                      !isAlreadySelected &&
+                      !canAddMore;
 
                     return activeCurrencies.includes(key) ? (
                       <s-stack
@@ -194,6 +228,9 @@ export default function ActiveCurrencies({ data, handleChange }) {
                           onChange={() => handleRemoveCurrency(key)}
                         />
                         <s-text>{value.code}</s-text>
+                        {isFreePlan && isDefaultCurrency && (
+                          <s-text tone="subdued" size="small">(Default)</s-text>
+                        )}
                       </s-stack>
                     ) : (
                       <s-stack
@@ -208,12 +245,7 @@ export default function ActiveCurrencies({ data, handleChange }) {
                         }}
                       >
                         <s-checkbox
-                          disabled={
-                            isDisabled &&
-                            !["US Dollar", "Euro", "Bangladeshi Taka"].includes(
-                              value.name,
-                            )
-                          }
+                          disabled={isDisabled}
                           label={value.name}
                           onChange={() => handleAddCurrency(key)}
                         />
