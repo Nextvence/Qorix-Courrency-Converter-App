@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15
@@ -31,6 +29,7 @@ services:
 
 volumes:
   pgdata_qorix_currency:
+    name: pgdata_qorix_currency
 
 networks:
   qorix-currency-network:
