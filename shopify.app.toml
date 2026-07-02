@@ -2,7 +2,7 @@
 
 client_id = "41db5a09820fb76a63d8a671d4846d1d"
 name = "Qorix Currency Converter"
-application_url = "https://qorix-currency.softvenceomega.com"
+application_url = "https://qorix-currency.nextvence.com"
 embedded = true
 
 [build]
@@ -36,9 +36,9 @@ api_version = "2026-04"
 scopes = "read_themes"
 
 [auth]
-redirect_urls = [ "https://qorix-currency.softvenceomega.com/api/auth" ]
+redirect_urls = [ "https://qorix-currency.nextvence.com/api/auth" ]
 
 [app_proxy]
-url = "https://qorix-currency.softvenceomega.com/api"
+url = "https://qorix-currency.nextvence.com/api"
 subpath = "currency-converter"
 prefix = "apps"
