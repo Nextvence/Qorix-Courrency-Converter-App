@@ -160,10 +160,10 @@ export default function Settings() {
             { method: "post" }
         );
         shopify.saveBar.hide('save-bar');
-        shopify.toast.show({
-            message: "Settings saved",
-            duration: 2000,
-        });
+        shopify.toast.show(
+           "Settings saved",
+            {duration: 2000}
+        );
     };
 
     const handleClearVisitorPreferences = () => {
@@ -185,10 +185,10 @@ export default function Settings() {
             { method: "post" }
         );
         shopify.saveBar.hide('save-bar');
-        shopify.toast.show({
-            message: "Visitor preferences cleared",
-            duration: 2000,
-        });
+        shopify.toast.show(
+           "Visitor preferences cleared",
+            {duration: 2000}
+        );
     };
 
     const handleResetAllSettings = () => {
@@ -200,10 +200,10 @@ export default function Settings() {
             { method: "post" }
         );
         shopify.saveBar.hide('save-bar');
-        shopify.toast.show({
-            message: "All settings reset to default",
-            duration: 2000,
-        });
+        shopify.toast.show(
+           "All settings reset to default",
+            {duration: 2000}
+        );
     };
 
     // Auto-reset when plan becomes free, including initial free load
@@ -232,10 +232,9 @@ export default function Settings() {
         setGeneralSettings(settingsGeneral);
         setWidgetSettings(settingsWidget);
         shopify.saveBar.hide('save-bar');
-        shopify.toast.show({
-            message: "Changes discarded",
-            duration: 2000,
-        });
+        shopify.toast.show( "Changes discarded",
+            {duration: 2000}
+        );
     };
     const handleChange = (event) => {
         if (event.target === "general") {

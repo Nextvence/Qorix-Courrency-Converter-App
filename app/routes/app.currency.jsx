@@ -126,10 +126,10 @@ export default function Currency() {
                 { method: "post" }
             );
             shopify.saveBar.hide('save-bar');
-            shopify.toast.show({
-                message: "Premium flag style removed because your plan is Free",
-                duration: 3000,
-            });
+            shopify.toast.show(
+               "Premium flag style removed because your plan is Free",
+                {duration: 3000}
+            );
         }
     }, [billing?.isFree, designSettings, currentAppInstallationId, fetcher, shopify]);
 
@@ -143,10 +143,10 @@ export default function Currency() {
             { method: "post" }
         );
         shopify.saveBar.hide('save-bar');
-        shopify.toast.show({
-            message: "Settings saved",
-            duration: 2000,
-        });
+        shopify.toast.show(
+           "Settings saved",
+            {duration: 2000}
+        );
     };
 
     const handleDiscard = () => {
@@ -154,10 +154,10 @@ export default function Currency() {
         setDesignSettings(currencyDesign);
         setAppSettings(settingsGeneral);
         shopify.saveBar.hide('save-bar');
-        shopify.toast.show({
-            message: "Changes discarded",
-            duration: 2000,
-        });
+        shopify.toast.show(
+             "Changes discarded",
+            {duration: 2000}
+        );
     };
     const handleChange = (event) => {
         if (event.target === "general") {
@@ -197,10 +197,10 @@ export default function Currency() {
             },
             { method: "post" }
         );
-        shopify.toast.show({
-            message: "Currency status updated",
-            duration: 2000,
-        });
+        shopify.toast.show(
+           "Currency status updated",
+            {duration: 2000}
+        );
     };
     return (
         <s-page heading={`${appName}`}>
