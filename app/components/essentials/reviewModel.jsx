@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useFetcher } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 
 // 1 star → very unhappy ... 5 star → very happy
@@ -16,14 +17,28 @@ const WIGGLE = {
 };
 
 export default function ReviewWidget({ appName = "our app", onDismiss, onSubmitRating }) {
+    const statusFetcher = useFetcher(); // checks whether shop already reviewed
+    const submitFetcher = useFetcher(); // saves the review status
+
     const [hovered, setHovered] = useState(0);
     const [selected, setSelected] = useState(0);
     const [dismissed, setDismissed] = useState(false);
 
+    // On mount, ask the server: has this shop already reviewed?
+    useEffect(() => {
+        statusFetcher.load("/api/review-status");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const stillChecking = statusFetcher.state === "loading" || statusFetcher.data === undefined;
+    const alreadyReviewed = statusFetcher.data?.reviewed === true;
+
     const activeRating = hovered || selected;
     const activeReaction = activeRating ? REACTIONS[activeRating - 1] : null;
 
-    if (dismissed) return null;
+    // Don't flash the widget while we're still checking, and never show it
+    // again once this shop has already reviewed, or if the user dismissed it.
+    if (dismissed || stillChecking || alreadyReviewed) return null;
 
     const handleDismiss = () => {
         setDismissed(true);
@@ -33,6 +48,10 @@ export default function ReviewWidget({ appName = "our app", onDismiss, onSubmitR
     const handleSelect = async (rating) => {
         setSelected(rating);
         onSubmitRating?.(rating);
+
+        // Save reviewed = true + rating + shop (shop is resolved server-side
+        // from the authenticated session, so we don't need to pass it here).
+        submitFetcher.submit({ rating: String(rating) }, { method: "post", action: "/api/review-status" });
 
         // Only trigger Shopify's native review modal for high ratings.
         // Shopify's guidelines require you to ask for a rating before
