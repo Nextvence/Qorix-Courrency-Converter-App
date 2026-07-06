@@ -16,6 +16,7 @@ import { getCurrencyFormats } from "../utils/currency.server";
 import { ensureAppMetafields } from "../utils/metafields.server";
 import { useEffect, useState } from "react";
 import { getBillingMode } from "../utils/hybridBilling.server";
+import ReviewWidget from "../components/essentials/reviewModel.jsx";
 
 export const loader = async ({ request }) => {
   const { getAnalyticsSummary } = await import("../utils/analytics.server");
@@ -36,7 +37,7 @@ export const loader = async ({ request }) => {
       }
     }`,
   );
-console.log("Billing info in loader:", billing);
+// console.log("Billing info in loader:", billing);
 if (billing.status !== "ACTIVE") {
   const { search } = new URL(request.url);
   return redirect(`/app/manage-plan${search}`);
@@ -230,8 +231,9 @@ export default function Index() {
         isVerifying={isVerifyingEmbedStatus}
       />
       {/* app embed status section end */}
-
+      <ReviewWidget/>
       {/* analytics section start */}
+      <br></br>
       <Analytics
         data={{
           analytics: loaderData.analytics,
