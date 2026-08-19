@@ -5,7 +5,12 @@ import AppEmbedStatus from "../components/essentials/AppEmbedStatus.jsx";
 import Analytics from "../components/essentials/Analytics.jsx";
 import FAQ from "../components/pages/dashboard/FAQ.jsx";
 import Help from "../components/pages/dashboard/Help.jsx";
-import { redirect, useFetcher, useLoaderData, useRouteLoaderData } from "react-router";
+import {
+  redirect,
+  useFetcher,
+  useLoaderData,
+  useRouteLoaderData,
+} from "react-router";
 import { useNavigation } from "react-router";
 import { useRevalidator } from "react-router";
 import Loader from "../components/essentials/Loader.jsx";
@@ -23,7 +28,10 @@ export const loader = async ({ request }) => {
   const { admin } = await authenticate.admin(request);
   const billing = await getBillingMode(request);
 
-  const { metafieldMap } = await ensureAppMetafields(admin, ["settings_general", "currency_general"]);
+  const { metafieldMap } = await ensureAppMetafields(admin, [
+    "settings_general",
+    "currency_general",
+  ]);
   const response = await admin.graphql(
     `#graphql
     query ShopShow {
@@ -37,12 +45,15 @@ export const loader = async ({ request }) => {
       }
     }`,
   );
-// console.log("Billing info in loader:", billing);
-if (billing.status !== "ACTIVE") {
-  const { search } = new URL(request.url);
-  return redirect(`/app/manage-plan${search}`);
-}
-  const status = await getEmbedStatusForShop(admin, "qorix-currency-converter-embed");
+  // console.log("Billing info in loader:", billing);
+  if (billing.status !== "ACTIVE") {
+    const { search } = new URL(request.url);
+    return redirect(`/app/manage-plan${search}`);
+  }
+  const status = await getEmbedStatusForShop(
+    admin,
+    "qorix-currency-converter-embed",
+  );
   const currencyFormats = await getCurrencyFormats(admin);
   const json = await response.json();
   const shopDomain = json.data.shop.myshopifyDomain;
@@ -76,8 +87,10 @@ if (billing.status !== "ACTIVE") {
   }
 
   return {
-    activePlan: billing.hasActiveSubscription ? { name: billing.planDisplayName } : null,
-    
+    activePlan: billing.hasActiveSubscription
+      ? { name: billing.planDisplayName }
+      : null,
+
     billingMode: billing.mode,
     billingPlan: billing.plan,
     billingPlanDisplayName: billing.planDisplayName,
@@ -87,14 +100,17 @@ if (billing.status !== "ACTIVE") {
     currencyFormats: currencyFormats.shop,
     analytics,
     featureStatus: {
-      enableCurrency: Boolean(metafieldMap.settings_general?.appBehavior?.enableCurrency),
-      activeCurrenciesCount: metafieldMap.currency_general?.activeCurrencies?.length || 0,
-      locationDetection: Boolean(metafieldMap.currency_general?.locationDetection),
-  
-      
+      enableCurrency: Boolean(
+        metafieldMap.settings_general?.appBehavior?.enableCurrency,
+      ),
+      activeCurrenciesCount:
+        metafieldMap.currency_general?.activeCurrencies?.length || 0,
+      locationDetection: Boolean(
+        metafieldMap.currency_general?.locationDetection,
+      ),
     },
   };
-}
+};
 
 export const action = async ({ request }) => {
   const { admin } = await authenticate.admin(request);
@@ -105,7 +121,10 @@ export const action = async ({ request }) => {
     return Response.json({ ok: false }, { status: 400 });
   }
 
-  const { currentAppInstallationId, metafieldMap } = await ensureAppMetafields(admin, ["settings_general"]);
+  const { currentAppInstallationId, metafieldMap } = await ensureAppMetafields(
+    admin,
+    ["settings_general"],
+  );
   const nextEnabled = formData.get("enableCurrency") === "true";
   const currentSettingsGeneral = metafieldMap.settings_general || {};
   const updatedSettingsGeneral = {
@@ -156,9 +175,7 @@ export default function Index() {
   const isLoading = navigation.state === "loading";
 
   if (isLoading) {
-    return (
-      <Loader />
-    )
+    return <Loader />;
   }
 
   const { appName, apiKey } = useRouteLoaderData("routes/app");
@@ -166,7 +183,9 @@ export default function Index() {
   const revalidator = useRevalidator();
   const toggleFetcher = useFetcher();
 
-  const [isAppEnabled, setIsAppEnabled] = useState(loaderData.embedStatus == "ENABLED");
+  const [isAppEnabled, setIsAppEnabled] = useState(
+    loaderData.embedStatus == "ENABLED",
+  );
   const activationUrl = `https://${loaderData?.shop?.myshopifyDomain}/admin/themes/current/editor?context=apps&template=index&activateAppId=${apiKey}/qorix-currency-converter-embed`;
   const optimisticEnableCurrency = toggleFetcher.formData
     ? toggleFetcher.formData.get("enableCurrency") === "true"
@@ -185,7 +204,7 @@ export default function Index() {
   // handle setup guide data start
   const setupGuideHandle = (event) => {
     setIsAppEnabled(event?.isAppEnabled);
-  }
+  };
   // handle setup guide data end
 
   const handleVerifyEmbedStatus = () => {
@@ -201,20 +220,67 @@ export default function Index() {
         actionType: "toggle_currency_status",
         enableCurrency: String(!optimisticEnableCurrency),
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
   const planName = loaderData?.billingPlanDisplayName || "Free Plan";
   return (
     <s-page heading={`${appName}`}>
-      <s-stack direction="inline" alignItems="center" justifyContent="space-between" gap="base" paddingBlockEnd="base">
+      <s-stack
+        direction="inline"
+        alignItems="center"
+        justifyContent="space-between"
+        gap="base"
+        paddingBlockEnd="base"
+      >
         <Text as="h2">Welcome, {loaderData?.shop?.name}</Text>
-        <s-stack direction="inline" gap="small" alignItems="center" justifyContent="space-between" >
+        <s-stack
+          direction="inline"
+          gap="small"
+          alignItems="center"
+          justifyContent="space-between"
+        >
           <s-badge tone="success">Your Plan: {planName}</s-badge>
-          <s-button variant="primary" icon="store" href={`https://${loaderData?.shop?.primaryDomain?.host}`} target="_blank">View store</s-button>
+          <s-button
+            variant="primary"
+            icon="store"
+            href={`https://${loaderData?.shop?.primaryDomain?.host}`}
+            target="_blank"
+          >
+            View store
+          </s-button>
           {/* <s-button variant="secondary">Your plan: Free</s-button> */}
         </s-stack>
       </s-stack>
+
+      <s-banner heading={isAppEnabled ? "App embed status success" : "App embed status"} tone={isAppEnabled? "success" : "warning"} dismissible={isAppEnabled}>
+        <s-stack direction="inline" gap="small">
+          Allow the app to display popups on your storefront{" "}
+          <s-badge tone={isAppEnabled ? "success" : "warning"}>
+            {isAppEnabled ? "Enabled" : "Setup required"}
+          </s-badge>
+        </s-stack>
+       <br/>
+        <s-stack direction="inline" gap="small">
+          <s-button
+            variant="secondary"
+            disabled={isAppEnabled}
+            href={!isAppEnabled ? activationUrl : undefined}
+            target={!isAppEnabled ? "_blank" : undefined}
+          >
+            {isAppEnabled ? "Enabled" : "Enable now"}
+          </s-button>
+          {!isAppEnabled && (
+            <s-button
+              variant="tertiary"
+              onClick={handleVerifyEmbedStatus}
+              loading={isVerifyingEmbedStatus ? "true" : undefined}
+            >
+              Verify status
+            </s-button>
+          )}
+        </s-stack>
+      </s-banner>
 
       {/* setup guide section start */}
       <SetupGuide
@@ -224,14 +290,14 @@ export default function Index() {
       {/* setup guide section end */}
 
       {/* app embed status section start */}
-      <AppEmbedStatus
+      {/* <AppEmbedStatus
         isAppEnabled={isAppEnabled}
         activationUrl={activationUrl}
         onVerify={handleVerifyEmbedStatus}
         isVerifying={isVerifyingEmbedStatus}
-      />
+      /> */}
       {/* app embed status section end */}
-      <ReviewWidget/>
+      <ReviewWidget />
       {/* analytics section start */}
       <br></br>
       <Analytics

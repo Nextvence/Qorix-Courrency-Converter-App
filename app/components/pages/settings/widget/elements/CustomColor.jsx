@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CustomColor({
     label = "",
@@ -6,6 +6,11 @@ export default function CustomColor({
     onChange
 }) {
     const [color, setColor] = useState(defaultValue);
+
+    useEffect(() => {
+        setColor(defaultValue);
+    }, [defaultValue]);
+
     const handleColorChange = (e) => {
         setColor(e.target.value);
         onChange(e.target.value);
@@ -22,10 +27,10 @@ export default function CustomColor({
                 </s-clickable>
                 <s-popover id={id}>
                     <s-box padding="small">
-                        <s-color-picker defaultValue={color} onInput={handleColorChange} onChange={handleColorChange} />
+                        <s-color-picker value={color} defaultValue={color} onInput={handleColorChange} onChange={handleColorChange} />
                     </s-box>
                 </s-popover>
-                <s-text-field defaultValue={color} onInput={handleColorChange} onChange={handleColorChange} />
+                <s-text-field value={color} defaultValue={color} onInput={handleColorChange} onChange={handleColorChange} />
             </s-grid>
         </div>
     )
