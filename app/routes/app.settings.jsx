@@ -138,7 +138,18 @@ export const action = async ({ request }) => {
     { variables: { metafields } },
   );
 
-  return defaultGeneralSettings;
+  if (actionType === "reset_all_settings") {
+    return {
+      actionType: "reset_all_settings",
+      settingsGeneral: defaultGeneralSettings,
+      settingsWidget: defaultSettingsWidget,
+    };
+  }
+
+  return {
+    actionType: "save",
+    success: true,
+  };
 };
 
 export default function Settings() {
@@ -211,23 +222,10 @@ export default function Settings() {
     shopify.toast.show("All settings reset to default", { duration: 2000 });
   };
 
-  // Auto-reset when plan becomes free, including initial free load
-  const prevIsFreeRef = useRef(false);
   useEffect(() => {
-    if (billing?.isFree && !prevIsFreeRef.current) {
-      if (currentAppInstallationId) {
-        handleResetAllSettings();
-      }
-      prevIsFreeRef.current = true;
-    } else if (!billing?.isFree) {
-      prevIsFreeRef.current = false;
-    }
-  }, [billing?.isFree, currentAppInstallationId]);
-
-  useEffect(() => {
-    if (fetcher.data) {
-      setGeneralSettings(fetcher.data);
-      setWidgetSettings(defaultSettingsWidget);
+    if (fetcher.data?.actionType === "reset_all_settings") {
+      setGeneralSettings(fetcher.data.settingsGeneral);
+      setWidgetSettings(fetcher.data.settingsWidget);
     }
   }, [fetcher.data]);
 

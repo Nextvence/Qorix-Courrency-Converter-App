@@ -1,28 +1,29 @@
-import Button from "../elements/Button"
-import CustomSection from "../../../../essentials/CustomSection"
-import { useState } from "react"
-import {useRouteLoaderData} from "react-router"
-import paidPlan from "../../../../essentials/paidPlan"
+import Button from "../elements/Button";
+import CustomSection from "../../../../essentials/CustomSection";
+import { useRouteLoaderData } from "react-router";
+import paidPlan from "../../../../essentials/paidPlan";
+
 export default function Position({ data, handleChange }) {
-    const [position, setPosition] = useState(data.widgetSettings.position);
-    const [customSelector, setCustomSelector] = useState(data.widgetSettings.customSelector);
+    const position = data?.widgetSettings?.position || "bottom_right";
+    const customSelector = data?.widgetSettings?.customSelector || "";
     const { billing } = useRouteLoaderData("routes/app");
-    const handlePositionChange = (event) => {
-        setPosition(event);
+
+    const handlePositionChange = (pos) => {
         handleChange({
             target: "widget",
             subTarget: "position",
-            value: event
+            value: pos
         });
-    }
+    };
+
     const handleCustomSelectorInput = (event) => {
-        setCustomSelector(event.target.value);
         handleChange({
             target: "widget",
             subTarget: "customSelector",
             value: event.target.value
         });
-    }
+    };
+
     return (
         <div style={{ display: "grid", gap: "7px" }}>
             <div style={{ display: "grid", gap: "5px" }}>
@@ -30,31 +31,31 @@ export default function Position({ data, handleChange }) {
                 <s-paragraph color="subdued">Where the widget floats on screen</s-paragraph>
             </div>
             <s-grid gridTemplateColumns="repeat(3, 1fr)" gap="small">
-                <Button isActive={position == "top_left"} onClick={() => handlePositionChange("top_left")}>
+                <Button isActive={position === "top_left"} onClick={() => handlePositionChange("top_left")}>
                     •
                 </Button>
-                <Button isActive={position == "top_center"} onClick={() => handlePositionChange("top_center")}>
+                <Button isActive={position === "top_center"} onClick={() => handlePositionChange("top_center")}>
                     •
                 </Button>
-                <Button isActive={position == "top_right"} onClick={() => handlePositionChange("top_right")}>
+                <Button isActive={position === "top_right"} onClick={() => handlePositionChange("top_right")}>
                     •
                 </Button>
-                <Button isActive={position == "middle_left"} onClick={() => handlePositionChange("middle_left")}>
+                <Button isActive={position === "middle_left"} onClick={() => handlePositionChange("middle_left")}>
                     •
                 </Button>
                 <Button disabled={true}>
                     •
                 </Button>
-                <Button isActive={position == "middle_right"} onClick={() => handlePositionChange("middle_right")}>
+                <Button isActive={position === "middle_right"} onClick={() => handlePositionChange("middle_right")}>
                     •
                 </Button>
-                <Button isActive={position == "bottom_left"} onClick={() => handlePositionChange("bottom_left")}>
+                <Button isActive={position === "bottom_left"} onClick={() => handlePositionChange("bottom_left")}>
                     •
                 </Button>
-                <Button isActive={position == "bottom_center"} onClick={() => handlePositionChange("bottom_center")}>
+                <Button isActive={position === "bottom_center"} onClick={() => handlePositionChange("bottom_center")}>
                     •
                 </Button>
-                <Button isActive={position == "bottom_right"} onClick={() => handlePositionChange("bottom_right")}>
+                <Button isActive={position === "bottom_right"} onClick={() => handlePositionChange("bottom_right")}>
                     •
                 </Button>
             </s-grid>
@@ -62,8 +63,8 @@ export default function Position({ data, handleChange }) {
             <s-stack paddingBlockStart="small">
                 <CustomSection background="#F5F7F9">
                     <s-stack paddingBlockEnd="small">
-                        <s-heading>Custom selector {billing?.isFree &&  paidPlan(false)}</s-heading>
-                        <s-paragraph color="subdued">Inject into any element using a CSS selector.  </s-paragraph>
+                        <s-heading>Custom selector {billing?.isFree && paidPlan(false)}</s-heading>
+                        <s-paragraph color="subdued">Inject into any element using a CSS selector.</s-paragraph>
                     </s-stack>
                     <s-text-field disabled={billing?.isFree} placeholder="(e.g. #custom-selector)" value={billing?.isFree ? "" : customSelector} onInput={handleCustomSelectorInput} />
                     <s-stack paddingBlockStart="small">
@@ -71,6 +72,6 @@ export default function Position({ data, handleChange }) {
                     </s-stack>
                 </CustomSection>
             </s-stack>
-        </div >
-    )
+        </div>
+    );
 }

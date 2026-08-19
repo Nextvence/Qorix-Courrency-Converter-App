@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CustomRange({
     unit = "px",
@@ -9,16 +9,22 @@ export default function CustomRange({
     label = ""
 }) {
     const [rangeValue, setRangeValue] = useState(defaultValue);
+
+    useEffect(() => {
+        setRangeValue(defaultValue);
+    }, [defaultValue]);
+
     const handleRangeChange = (e) => {
-        setRangeValue(e.target.value);
-        onChange(e.target.value);
+        const val = Number(e.target.value);
+        setRangeValue(val);
+        onChange(val);
     }
     const className = label !== "" ? label.toLowerCase().replace(" ", "-") : `custom-range-${Math.random().toString(36).substring(2, 9)}`;
     return (
         <div style={{ display: "grid", gap: "3px" }}>
             {label !== "" && <s-paragraph>{label}</s-paragraph>}
             <s-grid gridTemplateColumns="1fr 40px" gap="small" alignItems="center">
-                <input className={className} type="range" min={min} max={max} defaultValue={rangeValue} onChange={handleRangeChange} />
+                <input className={className} type="range" min={min} max={max} value={rangeValue} onChange={handleRangeChange} />
                 <style>
                     {`
                         .${className} {

@@ -1,32 +1,32 @@
 import { useState } from "react";
 
 export default function Visibility({ data, handleChange }) {
-    const [enableOnDesktop, setEnableOnDesktop] = useState(data.widgetSettings.visibility.enableOnDesktop);
-    const [enableOnMobile, setEnableOnMobile] = useState(data.widgetSettings.visibility.enableOnMobile);
+    const visibility = data?.widgetSettings?.visibility || { enableOnDesktop: true, enableOnMobile: true };
+    const enableOnDesktop = visibility.enableOnDesktop !== false;
+    const enableOnMobile = visibility.enableOnMobile !== false;
+
     const handleEnableOnDesktop = () => {
         const updated = !enableOnDesktop;
-        setEnableOnDesktop(updated);
         handleChange({
             target: "widget",
             subTarget: "visibility",
             value: {
-                ...data.widgetSettings.visibility,
+                ...visibility,
                 enableOnDesktop: updated
             }
         });
-    }
+    };
     const handleEnableOnMobile = () => {
         const updated = !enableOnMobile;
-        setEnableOnMobile(updated);
         handleChange({
             target: "widget",
             subTarget: "visibility",
             value: {
-                ...data.widgetSettings.visibility,
+                ...visibility,
                 enableOnMobile: updated
             }
         });
-    }
+    };
     return (
         <div style={{ display: "grid", gap: "7px" }}>
             <div style={{ display: "grid", gap: "3px" }}>
