@@ -3,10 +3,11 @@ import CustomSection from "../../../../essentials/CustomSection";
 import CustomRange from "../elements/CustomRange";
 
 export default function OffsetFromEdge({ data, handleChange }) {
-    const [horizontal, setHorizontal] = useState(data.widgetSettings.offsetFromEdge.horizontal);
-    const [vertical, setVertical] = useState(data.widgetSettings.offsetFromEdge.vertical);
+    const offsetFromEdge = data?.widgetSettings?.offsetFromEdge || { horizontal: 20, vertical: 20 };
+    const horizontal = offsetFromEdge.horizontal ?? 20;
+    const vertical = offsetFromEdge.vertical ?? 20;
+
     const handleHorizontal = (event) => {
-        setHorizontal(event);
         handleChange({
             target: "widget",
             subTarget: "offsetFromEdge",
@@ -15,9 +16,8 @@ export default function OffsetFromEdge({ data, handleChange }) {
                 vertical: vertical
             }
         });
-    }
+    };
     const handleVertical = (event) => {
-        setVertical(event);
         handleChange({
             target: "widget",
             subTarget: "offsetFromEdge",
@@ -26,7 +26,7 @@ export default function OffsetFromEdge({ data, handleChange }) {
                 vertical: event
             }
         });
-    }
+    };
     return (
         <s-stack gap="small">
             <s-heading>Offset from edge</s-heading>

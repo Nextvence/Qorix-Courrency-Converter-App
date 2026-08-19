@@ -5,16 +5,16 @@ import Button from "../elements/Button";
 import { useState } from "react";
 
 export default function ThemeCustomisation({ data, handleChange }) {
-    const themeCustomisation = data.widgetSettings.themeCustomisation || {};
-    const [shadow, setShadow] = useState(themeCustomisation.shadow || "none");
-    const [backgroundColor, setBackgroundColor] = useState(themeCustomisation.backgroundColor || "#ffffff");
-    const [hoverBackground, setHoverBackground] = useState(themeCustomisation.hoverBackground || "#f3f3f3");
-    const [textColor, setTextColor] = useState(themeCustomisation.textColor || "#303030");
-    const [borderColor, setBorderColor] = useState(themeCustomisation.borderColor || "#b8b8b8");
-    const [hoverColor, setHoverColor] = useState(themeCustomisation.hoverColor || "#202020");
-    const [borderRadius, setBorderRadius] = useState(themeCustomisation.borderRadius || 8);
+    const themeCustomisation = data?.widgetSettings?.themeCustomisation || {};
+    const shadow = themeCustomisation.shadow || "none";
+    const backgroundColor = themeCustomisation.backgroundColor || "#ffffff";
+    const hoverBackground = themeCustomisation.hoverBackground || "#f3f3f3";
+    const textColor = themeCustomisation.textColor || "#303030";
+    const borderColor = themeCustomisation.borderColor || "#b8b8b8";
+    const hoverColor = themeCustomisation.hoverColor || "#202020";
+    const borderRadius = themeCustomisation.borderRadius ?? 8;
+
     const handleBackgroundColor = (color) => {
-        setBackgroundColor(color);
         handleChange({
             target: "widget",
             subTarget: "themeCustomisation",
@@ -23,9 +23,8 @@ export default function ThemeCustomisation({ data, handleChange }) {
                 backgroundColor: color
             }
         });
-    }
+    };
     const handleHoverBackground = (color) => {
-        setHoverBackground(color);
         handleChange({
             target: "widget",
             subTarget: "themeCustomisation",
@@ -34,9 +33,8 @@ export default function ThemeCustomisation({ data, handleChange }) {
                 hoverBackground: color
             }
         });
-    }
+    };
     const handleTextColor = (color) => {
-        setTextColor(color);
         handleChange({
             target: "widget",
             subTarget: "themeCustomisation",
@@ -45,9 +43,8 @@ export default function ThemeCustomisation({ data, handleChange }) {
                 textColor: color
             }
         });
-    }
+    };
     const handleBorderColor = (color) => {
-        setBorderColor(color);
         handleChange({
             target: "widget",
             subTarget: "themeCustomisation",
@@ -56,9 +53,8 @@ export default function ThemeCustomisation({ data, handleChange }) {
                 borderColor: color
             }
         });
-    }
+    };
     const handleHoverColor = (color) => {
-        setHoverColor(color);
         handleChange({
             target: "widget",
             subTarget: "themeCustomisation",
@@ -67,9 +63,8 @@ export default function ThemeCustomisation({ data, handleChange }) {
                 hoverColor: color
             }
         });
-    }
+    };
     const handleBorderRadius = (value) => {
-        setBorderRadius(value);
         handleChange({
             target: "widget",
             subTarget: "themeCustomisation",
@@ -78,18 +73,17 @@ export default function ThemeCustomisation({ data, handleChange }) {
                 borderRadius: Number(value)
             }
         });
-    }
-    const handleShadowChange = (shadow) => {
-        setShadow(shadow);
+    };
+    const handleShadowChange = (shadowVal) => {
         handleChange({
             target: "widget",
             subTarget: "themeCustomisation",
             value: {
                 ...themeCustomisation,
-                shadow
+                shadow: shadowVal
             }
         });
-    }
+    };
     return (
         <s-stack gap="small">
             <s-heading>Theme customisation</s-heading>

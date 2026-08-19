@@ -10,11 +10,12 @@ import * as Flags from "country-flag-icons/react/3x2";
 export default function WidgetPreview({ data, handleChange }) {
     const [activeDevice, setActiveDevice] = useState("desktop");
     const [scrollPosition, setScrollPosition] = useState(0);
-    const { widgetSettings } = data;
-    const { visibility } = widgetSettings;
-    const { position } = widgetSettings;
-    const { offsetFromEdge } = widgetSettings;
-    const { enableOnDesktop, enableOnMobile } = visibility;
+    const widgetSettings = data?.widgetSettings || {};
+    const visibility = widgetSettings.visibility || { enableOnDesktop: true, enableOnMobile: true };
+    const position = widgetSettings.position || "bottom_right";
+    const offsetFromEdge = widgetSettings.offsetFromEdge || { horizontal: 20, vertical: 20 };
+    const enableOnDesktop = visibility.enableOnDesktop !== false;
+    const enableOnMobile = visibility.enableOnMobile !== false;
     const themeCustomisation = {
         backgroundColor: "#ffffff",
         textColor: "#303030",
@@ -23,7 +24,7 @@ export default function WidgetPreview({ data, handleChange }) {
         hoverColor: "#202020",
         borderRadius: 8,
         shadow: "none",
-        ...widgetSettings.themeCustomisation
+        ...(widgetSettings.themeCustomisation || {})
     };
     useEffect(() => {
         const handleScroll = () => {
