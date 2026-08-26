@@ -671,6 +671,12 @@
         "symbol": "USh",
         "code": "UGX"
     },
+    "aed": {
+        "country": "United Arab Emirates",
+        "name": "UAE Dirham",
+        "symbol": "د.إ",
+        "code": "AED"
+    },
     "usd": {
         "country": "United States",
         "name": "US Dollar",
