@@ -1,4 +1,3 @@
-import { Text } from "@shopify/polaris";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import SetupGuide from "../components/pages/dashboard/SetupGuide.jsx";
 import AppEmbedStatus from "../components/essentials/AppEmbedStatus.jsx";
@@ -19,10 +18,10 @@ import { authenticate } from "../shopify.server";
 import { getEmbedStatusForShop } from "../utils/embed.server";
 import { getCurrencyFormats } from "../utils/currency.server";
 import { ensureAppMetafields } from "../utils/metafields.server";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getBillingMode } from "../utils/hybridBilling.server";
 import ReviewWidget from "../components/essentials/reviewModel.jsx";
-
+import { Text } from "@shopify/polaris";
 export const loader = async ({ request }) => {
   const { getAnalyticsSummary } = await import("../utils/analytics.server");
   const { admin } = await authenticate.admin(request);
@@ -195,12 +194,6 @@ export default function Index() {
     setIsAppEnabled(loaderData.embedStatus == "ENABLED");
   }, [loaderData.embedStatus]);
 
-  useEffect(() => {
-    if (toggleFetcher.state === "idle" && toggleFetcher.data?.ok) {
-      revalidator.revalidate();
-    }
-  }, [toggleFetcher.state, toggleFetcher.data, revalidator]);
-
   // handle setup guide data start
   const setupGuideHandle = (event) => {
     setIsAppEnabled(event?.isAppEnabled);
@@ -223,6 +216,24 @@ export default function Index() {
       { method: "post" },
     );
   };
+
+  const prevToggleDataRef = useRef();
+  useEffect(() => {
+    if (
+      toggleFetcher.state === "idle" &&
+      toggleFetcher.data &&
+      toggleFetcher.data !== prevToggleDataRef.current
+    ) {
+      prevToggleDataRef.current = toggleFetcher.data;
+      if (toggleFetcher.data.ok) {
+        shopify.toast.show(
+          toggleFetcher.data.enableCurrency
+            ? "Currency conversion on"
+            : "Currency conversion off",
+        );
+      }
+    }
+  }, [toggleFetcher.state, toggleFetcher.data]);
   const planName = loaderData?.billingPlanDisplayName || "Free Plan";
   return (
     <s-page heading={`${appName}`}>
@@ -253,7 +264,7 @@ export default function Index() {
         </s-stack>
       </s-stack>
 
-      <s-banner heading={isAppEnabled ? "App embed status success" : "App embed status"} tone={isAppEnabled? "success" : "warning"} dismissible={isAppEnabled}>
+      {/* <s-banner heading={isAppEnabled ? "App embed status success" : "App embed status"} tone={isAppEnabled? "success" : "warning"} dismissible={isAppEnabled}>
         <s-stack direction="inline" gap="small">
           Allow the app to display popups on your storefront{" "}
           <s-badge tone={isAppEnabled ? "success" : "warning"}>
@@ -280,7 +291,60 @@ export default function Index() {
             </s-button>
           )}
         </s-stack>
-      </s-banner>
+      </s-banner> */}
+      <s-section>
+        <s-stack direction="inline" gap="base" paddingBlockEnd="small">
+          <div
+            style={{
+              fontSize: "15px",
+              fontWeight: "600",
+            }}
+          >
+            App Embed Status
+          </div>
+
+          <s-badge tone={isAppEnabled ? "success" : "warning"}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <span
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  borderRadius: "50%",
+                  backgroundColor: isAppEnabled ? "#08d657dc" : "#c58906dc",
+                }}
+              ></span>{" "}
+              {isAppEnabled ? "Active" : "Inactive"}
+            </div>
+          </s-badge>
+        </s-stack>
+        <s-divider />
+        {isAppEnabled ? (
+          <s-paragraph>
+            Qorix Currency Converter is active and running on your online store.
+          </s-paragraph>
+        ) : (
+          <s-paragraph>
+            Qorix Currency Converter is currently inactive. Enable the app embed
+            in your theme editor to show the widget
+          </s-paragraph>
+        )}
+        {!isAppEnabled && (
+          <s-button
+            variant="primary"
+            disabled={isAppEnabled}
+            href={!isAppEnabled ? activationUrl : undefined}
+            target={!isAppEnabled ? "_blank" : undefined}
+          >
+            {isAppEnabled ? "App embeded" : "Active app embed"}
+          </s-button>
+        )}
+      </s-section>
 
       {/* setup guide section start */}
       <SetupGuide

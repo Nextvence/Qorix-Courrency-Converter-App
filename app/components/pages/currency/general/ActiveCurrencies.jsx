@@ -14,7 +14,7 @@ export default function ActiveCurrencies({ data, handleChange }) {
   const [searchQuery, setSearchQuery] = useState("");
   const { billing } = useRouteLoaderData("routes/app");
   const isFreePlan = billing?.isFree;
-  
+
   // Default currency for free plan
   const DEFAULT_CURRENCY = "usd";
   const MAX_FREE_PLAN_CURRENCIES = 4; // 1 default + 3 additional
@@ -63,7 +63,7 @@ export default function ActiveCurrencies({ data, handleChange }) {
     if (isFreePlan && activeCurrencies.length > MAX_FREE_PLAN_CURRENCIES) {
       // Keep only the first 4 currencies in the order selected
       const adjusted = activeCurrencies.slice(0, MAX_FREE_PLAN_CURRENCIES);
-      
+
       setActiveCurrencies(adjusted);
       handleChange({
         target: "general",
@@ -115,6 +115,7 @@ export default function ActiveCurrencies({ data, handleChange }) {
 
   return (
     <CustomGridSection
+      isFreePlan={isFreePlan}
       heading="Active currencies"
       description="Select the currencies your store should support. Base currency is always included."
     >
@@ -173,7 +174,17 @@ export default function ActiveCurrencies({ data, handleChange }) {
                   flexWrap: "nowrap",
                 }}
               >
-                <span>
+                <span
+                  style={{
+                    display: "block",
+                    color: "#1272dfff",
+                    marginBottom: "6px",
+                    background: "#cfe5ffff",
+                    width: "100%",
+                    padding: "4px 12px",
+                    borderRadius: "8px",
+                  }}
+                >
                   {isFreePlan
                     ? `Free Plan : 1 Default + ${activeCurrencies.length - 1} Additional (Max 4 Total) - ${activeCurrencies.length} Selected`
                     : `Select ${activeCurrencies.length} of ${Object.keys(currencies).length} currencies`}
@@ -210,9 +221,7 @@ export default function ActiveCurrencies({ data, handleChange }) {
                     const canAddMore =
                       activeCurrencies.length < MAX_FREE_PLAN_CURRENCIES;
                     const isDisabled =
-                      isFreePlan &&
-                      !isAlreadySelected &&
-                      !canAddMore;
+                      isFreePlan && !isAlreadySelected && !canAddMore;
 
                     return activeCurrencies.includes(key) ? (
                       <s-stack
@@ -229,7 +238,9 @@ export default function ActiveCurrencies({ data, handleChange }) {
                         />
                         <s-text>{value.code}</s-text>
                         {isFreePlan && isDefaultCurrency && (
-                          <s-text tone="subdued" size="small">(Default)</s-text>
+                          <s-text tone="subdued" size="small">
+                            (Default)
+                          </s-text>
                         )}
                       </s-stack>
                     ) : (
