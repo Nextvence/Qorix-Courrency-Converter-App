@@ -22,12 +22,13 @@ export default function CustomGridSection({
                     Full access to Standard & Pro Plan
                   </s-badge>
                 )}
-                {isFreePlan && heading == "Flag style" && (
-                  <s-badge tone="caution">
-                    {" "}
-                    Full access to Standard & Pro Plan
-                  </s-badge>
-                )}
+                {isFreePlan &&
+                  (heading == "Flag style" || heading == "App behavior") && (
+                    <s-badge tone="caution">
+                      {" "}
+                      Full access to Standard & Pro Plan
+                    </s-badge>
+                  )}
                 {badge?.tone && (
                   <s-badge tone={badge?.tone}>{badge?.text}</s-badge>
                 )}
