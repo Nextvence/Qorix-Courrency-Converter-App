@@ -18,7 +18,7 @@ import { authenticate } from "../shopify.server";
 import { getEmbedStatusForShop } from "../utils/embed.server";
 import { getCurrencyFormats } from "../utils/currency.server";
 import { ensureAppMetafields } from "../utils/metafields.server";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getBillingMode } from "../utils/hybridBilling.server";
 import ReviewWidget from "../components/essentials/reviewModel.jsx";
 import { Text } from "@shopify/polaris";
@@ -194,12 +194,6 @@ export default function Index() {
     setIsAppEnabled(loaderData.embedStatus == "ENABLED");
   }, [loaderData.embedStatus]);
 
-  useEffect(() => {
-    if (toggleFetcher.state === "idle" && toggleFetcher.data?.ok) {
-      revalidator.revalidate();
-    }
-  }, [toggleFetcher.state, toggleFetcher.data, revalidator]);
-
   // handle setup guide data start
   const setupGuideHandle = (event) => {
     setIsAppEnabled(event?.isAppEnabled);
@@ -222,6 +216,24 @@ export default function Index() {
       { method: "post" },
     );
   };
+
+  const prevToggleDataRef = useRef();
+  useEffect(() => {
+    if (
+      toggleFetcher.state === "idle" &&
+      toggleFetcher.data &&
+      toggleFetcher.data !== prevToggleDataRef.current
+    ) {
+      prevToggleDataRef.current = toggleFetcher.data;
+      if (toggleFetcher.data.ok) {
+        shopify.toast.show(
+          toggleFetcher.data.enableCurrency
+            ? "Currency conversion on"
+            : "Currency conversion off",
+        );
+      }
+    }
+  }, [toggleFetcher.state, toggleFetcher.data]);
   const planName = loaderData?.billingPlanDisplayName || "Free Plan";
   return (
     <s-page heading={`${appName}`}>
