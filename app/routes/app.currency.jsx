@@ -231,7 +231,7 @@ export default function Currency() {
         paddingBlockEnd="base"
       >
         <Text as="h2">Currency</Text>
-        <s-box>
+        {/* <s-box>
           <s-stack direction="inline" gap="small" alignItems="center">
             <s-box>
               <div
@@ -262,7 +262,7 @@ export default function Currency() {
               {isCurrencyEnabled ? "Turn off" : "Turn on"}
             </s-button>
           </s-stack>
-        </s-box>
+        </s-box> */}
       </s-stack>
 
       <s-section>
