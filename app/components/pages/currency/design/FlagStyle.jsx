@@ -41,7 +41,10 @@ export default function FlagStyle({ handleChange, data }) {
     >
       <CustomSection>
         <div style={{ position: "relative" }}>
-          <s-grid gridTemplateColumns="repeat(3, 80px)" gap="base">
+          <s-grid
+            gridTemplateColumns="@container (inline-size > 400px) 80px 80px 80px, 1fr 1fr"
+            gap="base"
+          >
             {flagStyleOptions?.map((option) => (
               <s-clickable
                 borderRadius="base"

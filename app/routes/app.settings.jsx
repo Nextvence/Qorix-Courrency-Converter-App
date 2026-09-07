@@ -285,20 +285,25 @@ export default function Settings() {
       </s-stack>
 
       <s-section>
-        <s-grid gridTemplateColumns="180px 180px" gap="small">
-          <TabButton
-            onClick={() => setActiveTab("general")}
-            isActive={activeTab === "general"}
+        <s-query-container>
+          <s-grid
+            gridTemplateColumns="@container (inline-size > 400px) 180px 180px, 1fr 1fr"
+            gap="small"
           >
-            General
-          </TabButton>
-          <TabButton
-            onClick={() => setActiveTab("widget")}
-            isActive={activeTab === "widget"}
-          >
-            Widget preview
-          </TabButton>
-        </s-grid>
+            <TabButton
+              onClick={() => setActiveTab("general")}
+              isActive={activeTab === "general"}
+            >
+              General
+            </TabButton>
+            <TabButton
+              onClick={() => setActiveTab("widget")}
+              isActive={activeTab === "widget"}
+            >
+              Widget preview
+            </TabButton>
+          </s-grid>
+        </s-query-container>
         {/* this is for empty space start */}
         <s-stack paddingBlock="large"></s-stack>
         {/* this is for empty space end */}

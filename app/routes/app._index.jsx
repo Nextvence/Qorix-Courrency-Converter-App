@@ -288,7 +288,7 @@ export default function Index() {
               fontWeight: "600",
             }}
           >
-            App embedded
+            App Embed Status
           </div>
 
           <s-badge tone={isAppEnabled ? "success" : "warning"}>
