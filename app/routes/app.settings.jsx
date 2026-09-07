@@ -348,7 +348,7 @@ export default function Settings() {
         )}
         {/* widget preview section end */}
       </s-section>
-      <s-banner heading="Danger Zone" tone="critical">
+      <s-banner heading="Danger Zone" tone="warning">
         <s-stack gap="base">
           {/* <div
             style={{
