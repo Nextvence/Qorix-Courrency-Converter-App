@@ -6,71 +6,75 @@ import flagStyleOptions from "../../../../assets/data/flag_style_options.json";
 import paidPlan from "../../../essentials/paidPlan";
 import { useRouteLoaderData } from "react-router";
 
-
 export default function FlagStyle({ handleChange, data }) {
-    const { flagStyle } = data.designSettings;
-    const { billing } = useRouteLoaderData("routes/app");
-    console.log("billing to golobal function", billing);
-    const [selectedFlagStyle, setSelectedFlagStyle] = useState(flagStyle);
+  const { flagStyle } = data.designSettings;
+  const { billing } = useRouteLoaderData("routes/app");
+  console.log("billing to golobal function", billing);
+  const [selectedFlagStyle, setSelectedFlagStyle] = useState(flagStyle);
 
-    useEffect(() => {
-        if (billing?.isFree && selectedFlagStyle === "3d_flag") {
-            setSelectedFlagStyle("2d_flag");
-            handleChange({
-                target: "design",
-                subTarget: "flagStyle",
-                value: "2d_flag",
-            });
-        }
-    }, [billing?.isFree, selectedFlagStyle, handleChange]);
-
-    const handleFlagStyleChange = (e) => {
-        setSelectedFlagStyle(e.value);
-        handleChange(
-            {
-                target: "design",
-                subTarget: "flagStyle",
-                value: e.value
-            }
-        );
+  useEffect(() => {
+    if (billing?.isFree && selectedFlagStyle === "3d_flag") {
+      setSelectedFlagStyle("2d_flag");
+      handleChange({
+        target: "design",
+        subTarget: "flagStyle",
+        value: "2d_flag",
+      });
     }
+  }, [billing?.isFree, selectedFlagStyle, handleChange]);
 
-    console.log("Selected flag style:",flagStyle);
-    return (
-        <CustomGridSection
-            heading="Flag style"
-            description="Visual style of country flags shown in the widget"
-        >
-            <CustomSection>
-                <div style={{ position: "relative" }}>
-                    <s-grid gridTemplateColumns='repeat(3, 80px)' gap='base'>
-                        {flagStyleOptions?.map((option) => (
-                            <s-clickable
-                                borderRadius='base'
-                                overflow='hidden'
-                                disabled={option.value === "3d_flag" && billing?.isFree}
-                                key={option.value}
-                                onClick={() => handleFlagStyleChange(option)}
-                            >
-                                <div className={`
-                                    flag-style-option 
-                                    
+  const handleFlagStyleChange = (e) => {
+    setSelectedFlagStyle(e.value);
+    handleChange({
+      target: "design",
+      subTarget: "flagStyle",
+      value: e.value,
+    });
+  };
+
+  console.log("Selected flag style:", flagStyle);
+  return (
+    <CustomGridSection
+      heading="Flag style"
+      description="Visual style of country flags shown in the widget"
+      isFreePlan={billing?.isFree}
+    >
+      <CustomSection>
+        <div style={{ position: "relative" }}>
+          <s-grid
+            gridTemplateColumns="@container (inline-size > 400px) 80px 80px 80px, 1fr 1fr"
+            gap="base"
+          >
+            {flagStyleOptions?.map((option) => (
+              <s-clickable
+                borderRadius="base"
+                overflow="hidden"
+                disabled={option.value === "3d_flag" && billing?.isFree}
+                key={option.value}
+                onClick={() => handleFlagStyleChange(option)}
+              >
+                <div
+                  className={`
+                                    flag-style-option
+
                                     ${selectedFlagStyle === option.value ? "selected" : ""}
-                                `}>
-                                    <FlagStyles style={option.value} />
-                                    <s-text>
-                                        {option.label} 
-                                        {billing?.isFree && option.value === "3d_flag" &&  paidPlan(true
-                                        )}
-                                     {/* {option.value === "3d_flag" &&   paidPlan()} */}
-                                    </s-text>
-                                </div>
-                            </s-clickable>
-                        ))}
-                    </s-grid>
+                                `}
+                >
+                  <FlagStyles style={option.value} />
+                  <s-text>
+                    {option.label}
+                    {billing?.isFree &&
+                      option.value === "3d_flag" &&
+                      paidPlan(true)}
+                    {/* {option.value === "3d_flag" &&   paidPlan()} */}
+                  </s-text>
                 </div>
-                <style>
-                    {`
+              </s-clickable>
+            ))}
+          </s-grid>
+        </div>
+        <style>
+          {`
                         .flag-style-option{
                             display: flex;
                             align-items: center;
@@ -89,8 +93,8 @@ export default function FlagStyle({ handleChange, data }) {
                             background-color: #CDFED4;
                         }
                     `}
-                </style>
-            </CustomSection>
-        </CustomGridSection>
-    )
+        </style>
+      </CustomSection>
+    </CustomGridSection>
+  );
 }
