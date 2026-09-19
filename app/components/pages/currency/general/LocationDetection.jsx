@@ -84,7 +84,7 @@ export default function LocationDetection({ data, handleChange }) {
             description="Automatically switch currencies based on visitor's location"
         >
             <CustomSection>
-                <s-stack paddingBlockEnd="small">
+                <s-stack>
                     <s-switch
                         label="Auto-detect visitor location"
                         details="Switches currency automatically based on IP region"
@@ -92,7 +92,7 @@ export default function LocationDetection({ data, handleChange }) {
                         onChange={handleLocationDetection}
                     />
                 </s-stack>
-                <s-stack gap="small">
+                <s-stack>
                     <s-switch
                         label="Exclude specific regions from auto-switch"
                         details="Do not auto-switch for selected countries, show fallback for them instead"
