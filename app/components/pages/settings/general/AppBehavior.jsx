@@ -88,8 +88,8 @@ export default function AppBehavior({ data, handleChange }) {
               gap: "8px",
               border: "1px solid",
               borderColor: billing?.isFree ? "#E0E0E0" : "transparent",
-              padding: "4px 8px",
-              borderRadius: "10px",
+              padding: billing?.isFree ? "4px 8px" : "0px",
+              borderRadius: billing?.isFree ? "10px" : "0px",
             }}
           >
             <s-switch

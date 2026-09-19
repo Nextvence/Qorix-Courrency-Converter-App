@@ -251,7 +251,7 @@ export default function Index() {
           alignItems="center"
           justifyContent="space-between"
         >
-          <s-badge tone="success">Your Plan: {planName}</s-badge>
+          <s-badge tone="success" size="large">Your Plan: {planName}</s-badge>
           <s-button
             variant="primary"
             icon="store"
