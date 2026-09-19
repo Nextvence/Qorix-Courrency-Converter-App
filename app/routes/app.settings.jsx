@@ -353,122 +353,124 @@ export default function Settings() {
         )}
         {/* widget preview section end */}
       </s-section>
-      <s-banner heading="Danger Zone" tone="warning">
-        <s-stack gap="base">
-          {/* <div
-            style={{
-              background: "#FF4C6E",
-              color: "#fff",
-              padding: "8px",
-              borderRadius: "8px",
-              textAlign: "center",
-            }}
-          >
-            Danger Zone
-          </div> */}
-
-          <CustomSection>
-            <s-query-container>
-              <s-grid
-                gridTemplateColumns="@container (inline-size > 560px) 1fr auto, 1fr"
-                gap="base"
-                alignItems="center"
-              >
-                <s-stack gap="small">
-                  <s-heading>
-                    <b>Reset all settings</b>
-                  </s-heading>
-                  <s-paragraph color="subdued">
-                    Restores all currency, and widget settings to their
-                    defaults. Your active currency selections will be cleared.
-                  </s-paragraph>
-                </s-stack>
-                <s-button
-                  variant="primary"
-                  tone="critical"
-                  onClick={handleResetAllSettings}
-                >
-                  Reset settings
-                </s-button>
-              </s-grid>
-            </s-query-container>
-          </CustomSection>
-
-          <CustomSection>
-            <s-query-container>
-              <s-grid
-                gridTemplateColumns="@container (inline-size > 560px) 1fr auto, 1fr"
-                gap="base"
-                alignItems="center"
-              >
-                <s-stack gap="small">
-                  <s-heading>
-                    <b>Clear visitor preference cookies</b>
-                  </s-heading>
-                  <s-paragraph color="subdued">
-                    Removes all saved currency preferences from visitor browsers
-                    on next page load.
-                  </s-paragraph>
-                </s-stack>
-                <s-button
-                  variant="primary"
-                  tone="critical"
-                  onClick={handleClearVisitorPreferences}
-                >
-                  Clear cookies
-                </s-button>
-              </s-grid>
-            </s-query-container>
-          </CustomSection>
-
-          {/*<CustomSection>
-                <s-query-container>
-                    <s-grid gridTemplateColumns="@container (inline-size > 560px) 1fr auto, 1fr" gap="base" alignItems="center">
-                        <s-stack gap="small">
-                            <s-heading>Uninstall app data</s-heading>
-                            <s-paragraph color="subdued">
-                                This action is currently disabled to prevent app-breaking metafield deletion.
-                            </s-paragraph>
-                        </s-stack>
-                        <s-button variant="primary" disabled>
-                            Coming soon
-                        </s-button>
-                    </s-grid>
-                </s-query-container>
-            </CustomSection>*/}
-
-          <s-stack>
-            <div
+      {activeTab === "general" && (
+        <s-banner heading="Danger Zone" tone="warning">
+          <s-stack gap="base">
+            {/* <div
               style={{
-                display: "flex",
-                flexWrap: "nowrap",
-                gap: "6px",
-                background: "#FFF7EB",
-                borderRadius: "8px",
-                overflow: "hidden",
+                background: "#FF4C6E",
+                color: "#fff",
                 padding: "8px",
+                borderRadius: "8px",
+                textAlign: "center",
               }}
             >
-              <s-icon type="alert-triangle" tone="warning" />
-              <s-paragraph tone="warning">
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                  }}
+              Danger Zone
+            </div> */}
+
+            <CustomSection>
+              <s-query-container>
+                <s-grid
+                  gridTemplateColumns="@container (inline-size > 560px) 1fr auto, 1fr"
+                  gap="base"
+                  alignItems="center"
                 >
-                  Please proceed with caution.
-                  <div>
-                    Actions are permanent and cannot be undone. Double-check
-                    before proceeding, especially when deleting data.
+                  <s-stack gap="small">
+                    <s-heading>
+                      <b>Reset all settings</b>
+                    </s-heading>
+                    <s-paragraph color="subdued">
+                      Restores all currency, and widget settings to their
+                      defaults. Your active currency selections will be cleared.
+                    </s-paragraph>
+                  </s-stack>
+                  <s-button
+                    variant="primary"
+                    tone="critical"
+                    onClick={handleResetAllSettings}
+                  >
+                    Reset settings
+                  </s-button>
+                </s-grid>
+              </s-query-container>
+            </CustomSection>
+
+            <CustomSection>
+              <s-query-container>
+                <s-grid
+                  gridTemplateColumns="@container (inline-size > 560px) 1fr auto, 1fr"
+                  gap="base"
+                  alignItems="center"
+                >
+                  <s-stack gap="small">
+                    <s-heading>
+                      <b>Clear visitor preference cookies</b>
+                    </s-heading>
+                    <s-paragraph color="subdued">
+                      Removes all saved currency preferences from visitor browsers
+                      on next page load.
+                    </s-paragraph>
+                  </s-stack>
+                  <s-button
+                    variant="primary"
+                    tone="critical"
+                    onClick={handleClearVisitorPreferences}
+                  >
+                    Clear cookies
+                  </s-button>
+                </s-grid>
+              </s-query-container>
+            </CustomSection>
+
+            {/*<CustomSection>
+                  <s-query-container>
+                      <s-grid gridTemplateColumns="@container (inline-size > 560px) 1fr auto, 1fr" gap="base" alignItems="center">
+                          <s-stack gap="small">
+                              <s-heading>Uninstall app data</s-heading>
+                              <s-paragraph color="subdued">
+                                  This action is currently disabled to prevent app-breaking metafield deletion.
+                              </s-paragraph>
+                          </s-stack>
+                          <s-button variant="primary" disabled>
+                              Coming soon
+                          </s-button>
+                      </s-grid>
+                  </s-query-container>
+              </CustomSection>*/}
+
+            <s-stack>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "nowrap",
+                  gap: "6px",
+                  background: "#FFF7EB",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  padding: "8px",
+                }}
+              >
+                <s-icon type="alert-triangle" tone="warning" />
+                <s-paragraph tone="warning">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                    }}
+                  >
+                    Please proceed with caution.
+                    <div>
+                      Actions are permanent and cannot be undone. Double-check
+                      before proceeding, especially when deleting data.
+                    </div>
                   </div>
-                </div>
-              </s-paragraph>
-            </div>
+                </s-paragraph>
+              </div>
+            </s-stack>
           </s-stack>
-        </s-stack>
-      </s-banner>
+        </s-banner>
+      )}
     </s-page>
   );
 }

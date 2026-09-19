@@ -19,14 +19,14 @@ export default function CustomGridSection({
                 {isFreePlan && heading == "Active currencies" && (
                   <s-badge tone="caution">
                     {" "}
-                    Full access to Standard & Pro Plan
+                    Full Access to Standard & Pro Plans
                   </s-badge>
                 )}
                 {isFreePlan &&
                   (heading == "Flag style" || heading == "App behavior") && (
                     <s-badge tone="caution">
                       {" "}
-                      Full access to Standard & Pro Plan
+                      Full Access to Standard & Pro Plans
                     </s-badge>
                   )}
                 {badge?.tone && (

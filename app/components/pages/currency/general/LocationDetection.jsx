@@ -1,5 +1,4 @@
 import { useState } from "react";
-import CustomSection from "../../../essentials/CustomSection";
 import CustomGridSection from "../../../essentials/CustomGridSection";
 export default function LocationDetection({ data, handleChange }) {
     const { locationDetection, restrictedAutoSwitch, activeCurrencies, fallBackCurrency } = data.generalSettings;
@@ -83,16 +82,14 @@ export default function LocationDetection({ data, handleChange }) {
             heading="Location-based currency switching"
             description="Automatically switch currencies based on visitor's location"
         >
-            <CustomSection>
-                <s-stack paddingBlockEnd="small">
+            <div style={{ borderRadius: "12px", border: "1px solid #e4e4e4ff", boxShadow: "0px 1px 3px 0px #e4e4e493", background: "transparent", padding: "10px 15px" }}>
+                <s-stack gap="base">
                     <s-switch
                         label="Auto-detect visitor location"
                         details="Switches currency automatically based on IP region"
                         checked={isLocationDetection}
                         onChange={handleLocationDetection}
                     />
-                </s-stack>
-                <s-stack gap="small">
                     <s-switch
                         label="Exclude specific regions from auto-switch"
                         details="Do not auto-switch for selected countries, show fallback for them instead"
@@ -148,8 +145,6 @@ export default function LocationDetection({ data, handleChange }) {
                             </div>
                         </s-stack>
                     )}
-                </s-stack>
-                <s-stack paddingBlockStart="base">
                     <s-select label="Fallback currency" details="Used when visitor's region has no matching currency" onChange={handleFallBackChange}>
                         {activeCurrencies?.map((currencyCode) => {
                             const countryObj = currencies[currencyCode];
@@ -159,7 +154,7 @@ export default function LocationDetection({ data, handleChange }) {
                         })}
                     </s-select>
                 </s-stack>
-            </CustomSection>
+            </div>
         </CustomGridSection>
     )
 }

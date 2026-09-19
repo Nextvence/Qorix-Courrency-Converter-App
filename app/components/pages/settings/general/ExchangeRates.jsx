@@ -55,7 +55,7 @@ export default function ExchangeRates({ data }) {
               <Text as="h2">{lastSync.headline}</Text>
               <p
                 style={{
-                  color: "#00BF7A",
+                  color: "#006641",
                   padding: "0",
                   margin: "0",
                   marginTop: "-8px",
