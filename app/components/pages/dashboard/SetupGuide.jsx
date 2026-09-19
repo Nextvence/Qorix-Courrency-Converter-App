@@ -52,19 +52,19 @@ export default function SetupGuide({ data, handleUpdate }) {
     if (typeof document === "undefined") return false;
     return (
       decodeHtml(currencyFormats?.currencyFormats?.moneyFormat) ===
-        defaultMoneyFormat &&
+      defaultMoneyFormat &&
       decodeHtml(currencyFormats?.currencyFormats?.moneyWithCurrencyFormat) ===
-        defaultMoneyWithCurrencyFormat
+      defaultMoneyWithCurrencyFormat
     );
   });
 
   useEffect(() => {
     setIsMoneyFormatUpdated(
       decodeHtml(currencyFormats?.currencyFormats?.moneyFormat) ===
-        defaultMoneyFormat &&
-        decodeHtml(
-          currencyFormats?.currencyFormats?.moneyWithCurrencyFormat,
-        ) === defaultMoneyWithCurrencyFormat,
+      defaultMoneyFormat &&
+      decodeHtml(
+        currencyFormats?.currencyFormats?.moneyWithCurrencyFormat,
+      ) === defaultMoneyWithCurrencyFormat,
     );
   }, [currencyFormats, defaultMoneyFormat, defaultMoneyWithCurrencyFormat]);
 
@@ -85,7 +85,7 @@ export default function SetupGuide({ data, handleUpdate }) {
       setCheckPhase("idle");
       if (
         decodeHtml(currencyFormats?.currencyFormats?.moneyFormat) ===
-          defaultMoneyFormat &&
+        defaultMoneyFormat &&
         decodeHtml(
           currencyFormats?.currencyFormats?.moneyWithCurrencyFormat,
         ) === defaultMoneyWithCurrencyFormat
@@ -242,7 +242,7 @@ export default function SetupGuide({ data, handleUpdate }) {
                       >
                         <s-banner
                           heading="Current money format"
-                          tone="critical"
+                          tone=""
                         >
                           <div
                             style={{
