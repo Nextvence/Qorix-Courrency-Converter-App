@@ -12,7 +12,7 @@ export default function DisplayMode({ data, handleChange }) {
   };
 
   return (
-    <div style={{ display: "grid", gap: "7px" }}>
+    <div style={{ display: "grid", gap: "12px" }}>
       <div style={{ display: "grid", gap: "3px" }}>
         <s-heading>Display mode</s-heading>
         <s-paragraph color="subdued">

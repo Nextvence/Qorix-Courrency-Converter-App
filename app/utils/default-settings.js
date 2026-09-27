@@ -1,6 +1,7 @@
 export const defaultSettingsWidget = {
   widgetType: "combined",
   displayMode: "currency_code",
+  flagStyle: "2d_flag",
   position: "bottom_left",
   customSelector: "",
   offsetFromEdge: { horizontal: 0, vertical: 0 },

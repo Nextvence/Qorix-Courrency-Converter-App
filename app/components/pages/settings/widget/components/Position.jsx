@@ -25,7 +25,7 @@ export default function Position({ data, handleChange }) {
   };
 
   return (
-    <div style={{ display: "grid", gap: "7px" }}>
+    <div style={{ display: "grid", gap: "12px" }}>
       <div style={{ display: "grid", gap: "5px" }}>
         <s-heading>Position</s-heading>
         <s-paragraph color="subdued">

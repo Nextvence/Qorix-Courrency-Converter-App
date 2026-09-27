@@ -21,6 +21,9 @@
   {% assign display_mode = app_data.settings_widget.value.displayMode %}
 {% endif %}
 {% assign flag_style = app_data.currency_design.value.flagStyle %}
+{% if app_data.settings_widget.value.flagStyle != blank %}
+  {% assign flag_style = app_data.settings_widget.value.flagStyle %}
+{% endif %}
 {% assign show_currency_name_on_hover = app_data.currency_design.value.behavior.showCurrencyNameOnHover %}
 {% assign dark_mode_support = app_data.currency_design.value.behavior.darkModeSupport %}
 {% assign location_detection = app_data.currency_general.value.locationDetection %}

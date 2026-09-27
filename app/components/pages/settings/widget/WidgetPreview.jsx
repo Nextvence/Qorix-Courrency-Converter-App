@@ -5,6 +5,7 @@ import OffsetFromEdge from "./components/OffsetFromEdge";
 import ThemeCustomisation from "./components/ThemeCustomisation";
 import { useEffect, useState } from "react";
 import DisplayMode from "./components/DisplayMode.jsx";
+import FlagStyle from "./components/FlagStyle.jsx";
 import Visibility from "./components/Visibility.jsx";
 
 import * as Flags from "country-flag-icons/react/3x2";
@@ -14,6 +15,7 @@ export default function WidgetPreview({ data, handleChange }) {
     const [scrollPosition, setScrollPosition] = useState(0);
     const widgetSettings = data?.widgetSettings || {};
     const displayMode = widgetSettings.displayMode || "currency_code";
+    const flagStyle = widgetSettings.flagStyle || "2d_flag";
     const visibility = widgetSettings.visibility || { enableOnDesktop: true, enableOnMobile: true };
     const position = widgetSettings.position || "bottom_right";
     const offsetFromEdge = widgetSettings.offsetFromEdge || { horizontal: 20, vertical: 20 };
@@ -99,6 +101,8 @@ export default function WidgetPreview({ data, handleChange }) {
                             <s-divider /> */}
                             <DisplayMode data={data} handleChange={handleChange} />
                             <s-divider />
+                            <FlagStyle data={data} handleChange={handleChange} />
+                            <s-divider />
 
                             <Position data={data} handleChange={handleChange} />
                             <s-divider />
@@ -142,9 +146,15 @@ export default function WidgetPreview({ data, handleChange }) {
                                                 <div id="preview-desktop">
                                                     <div className="widget_buttons_wrapper widget_single">
                                                         <div className="widget_button">
-                                                            <div className="widget_button_flag">
-                                                                <Flags.US />
-                                                            </div>
+                                                            {flagStyle !== "no_flag" && (
+                                                                <div className="widget_button_flag">
+                                                                    {flagStyle === "3d_flag" ? (
+                                                                        <img src="https://flags.sifatahmed.info/us/flag.gif" alt="USD" width="20" height="14" style={{ borderRadius: "2px" }} />
+                                                                    ) : (
+                                                                        <Flags.US />
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                             <div className="widget_button_text">
                                                                 {displayMode === "currency_name" ? "United States Dollar" : "USD"}
                                                             </div>
@@ -330,9 +340,15 @@ export default function WidgetPreview({ data, handleChange }) {
                                                 <div id="preview-mobile">
                                                     <div className="widget_buttons_wrapper widget_single">
                                                         <div className="widget_button">
-                                                            <div className="widget_button_flag">
-                                                                <Flags.US />
-                                                            </div>
+                                                            {flagStyle !== "no_flag" && (
+                                                                <div className="widget_button_flag">
+                                                                    {flagStyle === "3d_flag" ? (
+                                                                        <img src="https://flags.sifatahmed.info/us/flag.gif" alt="USD" width="20" height="14" style={{ borderRadius: "2px" }} />
+                                                                    ) : (
+                                                                        <Flags.US />
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                             <div className="widget_button_text">
                                                                 {displayMode === "currency_name" ? "United States Dollar" : "USD"}
                                                             </div>

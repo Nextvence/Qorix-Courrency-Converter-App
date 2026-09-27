@@ -13,8 +13,6 @@ import ActiveCurrencies from "../components/pages/currency/general/ActiveCurrenc
 import ExchangeRates from "../components/pages/currency/general/ExchangeRates.jsx";
 import LocationDetection from "../components/pages/currency/general/LocationDetection.jsx";
 import PriceDisplayFormat from "../components/pages/currency/general/PriceDisplayFormat.jsx";
-import DisplayMode from "../components/pages/currency/design/DisplayMode.jsx";
-import FlagStyle from "../components/pages/currency/design/FlagStyle.jsx";
 import Behavior from "../components/pages/currency/design/Behavior.jsx";
 import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 import currencies from "../assets/data/currencies.json";
@@ -325,17 +323,6 @@ export default function Currency() {
         {/* design section start */}
         {activeTab === "design" && (
           <CustomSection padding="none">
-            <DisplayMode
-              handleChange={handleChange}
-              data={{ designSettings }}
-            />
-            <s-stack paddingInlineEnd="large">
-              <s-divider />
-            </s-stack>
-            <FlagStyle handleChange={handleChange} data={{ designSettings }} />
-            <s-stack paddingInlineEnd="large">
-              <s-divider />
-            </s-stack>
             <Behavior handleChange={handleChange} data={{ designSettings }} />
           </CustomSection>
         )}
