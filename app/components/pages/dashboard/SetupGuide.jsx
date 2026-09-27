@@ -81,23 +81,48 @@ export default function SetupGuide({ data, handleUpdate }) {
   };
 
   useEffect(() => {
-    if (checkPhase === "starting" && revalidator.state === "loading") {
-      setCheckPhase("loading");
-    } else if (checkPhase === "loading" && revalidator.state === "idle") {
-      setCheckPhase("idle");
-      if (
-        decodeHtml(currencyFormats?.currencyFormats?.moneyFormat) ===
+    const isMatched =
+      decodeHtml(currencyFormats?.currencyFormats?.moneyFormat) ===
         defaultMoneyFormat &&
-        decodeHtml(
-          currencyFormats?.currencyFormats?.moneyWithCurrencyFormat,
-        ) === defaultMoneyWithCurrencyFormat
-      ) {
+      decodeHtml(
+        currencyFormats?.currencyFormats?.moneyWithCurrencyFormat,
+      ) === defaultMoneyWithCurrencyFormat;
+
+    const notifyResult = () => {
+      if (isMatched) {
         setIsMoneyFormatUpdated(true);
         setIsActivated("item3");
+        shopify.toast.show("Money format verified and updated successfully!", {
+          duration: 3000,
+        });
       } else {
         setIsMoneyFormatUpdated(false);
+        shopify.toast.show(
+          "Please update your money format first",
+          {
+            duration: 3500,
+            isError: true,
+          },
+        );
       }
       setHasCheckedMoneyFormat(true);
+    };
+
+    if (checkPhase === "starting") {
+      if (revalidator.state === "loading") {
+        setCheckPhase("loading");
+      } else {
+        const timer = setTimeout(() => {
+          if (checkPhase === "starting" && revalidator.state === "idle") {
+            setCheckPhase("idle");
+            notifyResult();
+          }
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    } else if (checkPhase === "loading" && revalidator.state === "idle") {
+      setCheckPhase("idle");
+      notifyResult();
     }
   }, [
     checkPhase,
@@ -105,6 +130,7 @@ export default function SetupGuide({ data, handleUpdate }) {
     currencyFormats,
     defaultMoneyFormat,
     defaultMoneyWithCurrencyFormat,
+    shopify,
   ]);
   // handling money format end
 
@@ -343,7 +369,7 @@ export default function SetupGuide({ data, handleUpdate }) {
                 )}
                 <s-button
                   variant="secondary"
-                  loading={isCheckingMoneyFormat}
+                  loading={isCheckingMoneyFormat ? "true" : undefined}
                   onClick={handleCheckMoneyFormat}
                   disabled={isMoneyFormatUpdated}
                 >
