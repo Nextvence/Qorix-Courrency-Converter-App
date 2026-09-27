@@ -167,14 +167,31 @@ export default function SetupGuide({ data, handleUpdate }) {
   };
 
   useEffect(() => {
-    if (step3CheckPhase === "starting" && revalidator.state === "loading") {
-      setStep3CheckPhase("loading");
-    } else if (step3CheckPhase === "loading" && revalidator.state === "idle") {
-      setStep3CheckPhase("idle");
+    const notifySuccess = () => {
       localStorage.setItem("step3Completed", "true");
       setStep3Completed(true);
+      shopify.toast.show("Currencies selected successfully!", {
+        duration: 3000,
+      });
+    };
+
+    if (step3CheckPhase === "starting") {
+      if (revalidator.state === "loading") {
+        setStep3CheckPhase("loading");
+      } else {
+        const timer = setTimeout(() => {
+          if (step3CheckPhase === "starting" && revalidator.state === "idle") {
+            setStep3CheckPhase("idle");
+            notifySuccess();
+          }
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    } else if (step3CheckPhase === "loading" && revalidator.state === "idle") {
+      setStep3CheckPhase("idle");
+      notifySuccess();
     }
-  }, [step3CheckPhase, revalidator.state]);
+  }, [step3CheckPhase, revalidator.state, shopify]);
 
   useEffect(() => {
     if (embedStatus !== "ENABLED") {
@@ -400,7 +417,7 @@ export default function SetupGuide({ data, handleUpdate }) {
               </s-stack>
               <s-button
                 onClick={handleStep3Completed}
-                loading={step3CheckPhase !== "idle"}
+                loading={step3CheckPhase !== "idle" ? "true" : undefined}
                 disabled={step3Completed}
                 variant="secondary"
               >
