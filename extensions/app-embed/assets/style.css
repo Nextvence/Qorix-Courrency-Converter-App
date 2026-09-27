@@ -116,8 +116,19 @@
     overflow: hidden;
     border: 1px solid var(--w-border-color) !important;
     border-radius: var(--w-border-radius) !important;
+    box-shadow: var(--w-shadow, none) !important;
     justify-content: space-between;
     min-width: 130px;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+[data-currency-converter-widget] .currency-widget__button:hover {
+    background-color: var(--w-bg-hover) !important;
+}
+[data-currency-converter-widget] .currency-widget__button:hover * {
+    color: var(--w-hover-color) !important;
+}
+[data-currency-converter-widget] .currency-widget__button:hover svg path {
+    stroke: var(--w-hover-color) !important;
 }
 [data-currency-converter-widget] .currency-widget__button .currency-widget__button-content {
     display: flex;

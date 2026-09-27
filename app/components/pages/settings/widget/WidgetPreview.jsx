@@ -26,6 +26,17 @@ export default function WidgetPreview({ data, handleChange }) {
         shadow: "none",
         ...(widgetSettings.themeCustomisation || {})
     };
+    const getShadowStyle = (shadowType) => {
+        switch (shadowType) {
+            case "subtle":
+                return "0 2px 8px rgba(0, 0, 0, 0.15)";
+            case "strong":
+                return "0 4px 16px rgba(0, 0, 0, 0.25)";
+            default:
+                return "none";
+        }
+    };
+    const shadowCss = getShadowStyle(themeCustomisation.shadow);
     useEffect(() => {
         const handleScroll = () => {
             setScrollPosition(window.scrollY);
@@ -247,8 +258,15 @@ export default function WidgetPreview({ data, handleChange }) {
                                             border: 1px solid ${themeCustomisation.borderColor};
                                             border-radius: ${themeCustomisation.borderRadius}px;
                                             background: ${themeCustomisation.backgroundColor};
+                                            color: ${themeCustomisation.textColor};
+                                            box-shadow: ${shadowCss};
                                             padding: 5px 10px;
                                             cursor: pointer;
+                                            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                                        }
+                                        .widget_button:hover{
+                                            background: ${themeCustomisation.hoverBackground} !important;
+                                            color: ${themeCustomisation.hoverColor} !important;
                                         }
                                         .widget_button_flag{
                                             width: 20px;
@@ -259,6 +277,11 @@ export default function WidgetPreview({ data, handleChange }) {
                                         .widget_button_text{
                                             font-size: 14px;
                                             line-height: 20px;
+                                            color: ${themeCustomisation.textColor};
+                                            transition: color 0.2s ease;
+                                        }
+                                        .widget_button:hover .widget_button_text{
+                                            color: ${themeCustomisation.hoverColor} !important;
                                         }
                                         .widget_button_icon{
                                             width: fit-content;
@@ -266,6 +289,19 @@ export default function WidgetPreview({ data, handleChange }) {
                                             display: flex;
                                             align-items: center;
                                             margin-left: 5px;
+                                            color: ${themeCustomisation.textColor};
+                                            transition: color 0.2s ease;
+                                        }
+                                        .widget_button_icon s-icon,
+                                        .widget_button_icon s-icon *{
+                                            color: inherit !important;
+                                            fill: currentColor !important;
+                                        }
+                                        .widget_button:hover .widget_button_icon,
+                                        .widget_button:hover .widget_button_icon s-icon,
+                                        .widget_button:hover .widget_button_icon s-icon *{
+                                            color: ${themeCustomisation.hoverColor} !important;
+                                            fill: ${themeCustomisation.hoverColor} !important;
                                         }
                                         @media(max-width: 804px){
                                             #desktop-preview-frame .background{
@@ -411,8 +447,15 @@ export default function WidgetPreview({ data, handleChange }) {
                                             border: 1px solid ${themeCustomisation.borderColor};
                                             border-radius: ${themeCustomisation.borderRadius}px;
                                             background: ${themeCustomisation.backgroundColor};
+                                            color: ${themeCustomisation.textColor};
+                                            box-shadow: ${shadowCss};
                                             padding: 5px 10px;
                                             cursor: pointer;
+                                            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                                        }
+                                        .widget_button:hover{
+                                            background: ${themeCustomisation.hoverBackground} !important;
+                                            color: ${themeCustomisation.hoverColor} !important;
                                         }
                                         .widget_button_flag{
                                             width: 20px;
@@ -423,6 +466,11 @@ export default function WidgetPreview({ data, handleChange }) {
                                         .widget_button_text{
                                             font-size: 14px;
                                             line-height: 20px;
+                                            color: ${themeCustomisation.textColor};
+                                            transition: color 0.2s ease;
+                                        }
+                                        .widget_button:hover .widget_button_text{
+                                            color: ${themeCustomisation.hoverColor} !important;
                                         }
                                         .widget_button_icon{
                                             width: fit-content;
@@ -430,6 +478,19 @@ export default function WidgetPreview({ data, handleChange }) {
                                             display: flex;
                                             align-items: center;
                                             margin-left: 5px;
+                                            color: ${themeCustomisation.textColor};
+                                            transition: color 0.2s ease;
+                                        }
+                                        .widget_button_icon s-icon,
+                                        .widget_button_icon s-icon *{
+                                            color: inherit !important;
+                                            fill: currentColor !important;
+                                        }
+                                        .widget_button:hover .widget_button_icon,
+                                        .widget_button:hover .widget_button_icon s-icon,
+                                        .widget_button:hover .widget_button_icon s-icon *{
+                                            color: ${themeCustomisation.hoverColor} !important;
+                                            fill: ${themeCustomisation.hoverColor} !important;
                                         }
                                         @media(max-width: 804px){
                                             #mobile-preview-frame .background{
