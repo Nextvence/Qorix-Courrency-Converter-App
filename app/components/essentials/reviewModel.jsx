@@ -22,11 +22,28 @@ export default function ReviewWidget({ appName = "our app", onDismiss, onSubmitR
 
     const [hovered, setHovered] = useState(0);
     const [selected, setSelected] = useState(0);
-    const [dismissed, setDismissed] = useState(false);
+    const [dismissed, setDismissed] = useState(true);
 
-    // On mount, ask the server: has this shop already reviewed?
+    // On mount, check if dismissed in localStorage or cookies. If not, check review status from server.
     useEffect(() => {
-        statusFetcher.load("/api/review-status");
+        let isDismissed = false;
+        try {
+            if (
+                localStorage.getItem("qorix_review_widget_dismissed") === "true" ||
+                document.cookie.includes("qorix_review_widget_dismissed=true")
+            ) {
+                isDismissed = true;
+            }
+        } catch (e) {
+            console.error("Storage access error:", e);
+        }
+
+        if (isDismissed) {
+            setDismissed(true);
+        } else {
+            setDismissed(false);
+            statusFetcher.load("/api/review-status");
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -40,14 +57,29 @@ export default function ReviewWidget({ appName = "our app", onDismiss, onSubmitR
     // again once this shop has already reviewed, or if the user dismissed it.
     if (dismissed || stillChecking || alreadyReviewed) return null;
 
+    const saveDismissedLocally = () => {
+        try {
+            localStorage.setItem("qorix_review_widget_dismissed", "true");
+        } catch (e) {
+            console.error("Failed to save dismissed status to localStorage:", e);
+        }
+        try {
+            document.cookie = "qorix_review_widget_dismissed=true; path=/; max-age=31536000; SameSite=Lax";
+        } catch (e) {
+            console.error("Failed to save dismissed status to cookie:", e);
+        }
+    };
+
     const handleDismiss = () => {
         setDismissed(true);
+        saveDismissedLocally();
         onDismiss?.();
     };
 
     const handleSelect = async (rating) => {
         setSelected(rating);
         onSubmitRating?.(rating);
+        saveDismissedLocally();
 
         // Save reviewed = true + rating + shop (shop is resolved server-side
         // from the authenticated session, so we don't need to pass it here).
@@ -171,13 +203,25 @@ export default function ReviewWidget({ appName = "our app", onDismiss, onSubmitR
                 onClick={handleDismiss}
                 style={{
                     position: "absolute",
-                    top: "10px",
-                    right: "12px",
-                    background: "none",
+                    top: "8px",
+                    right: "10px",
+                    background: "transparent",
                     border: "none",
                     cursor: "pointer",
-                    fontSize: "16px",
+                    fontSize: "18px",
+                    lineHeight: "1",
                     color: "#8C8C8C",
+                    padding: "4px 8px",
+                    borderRadius: "6px",
+                    transition: "all 0.15s ease",
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "#1A1A1A";
+                    e.currentTarget.style.backgroundColor = "#F1F1F1";
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#8C8C8C";
+                    e.currentTarget.style.backgroundColor = "transparent";
                 }}
             >
                 ×
