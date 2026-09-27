@@ -3,14 +3,17 @@ import WidgetType from "./components/WidgetType";
 import Position from "./components/Position";
 import OffsetFromEdge from "./components/OffsetFromEdge";
 import ThemeCustomisation from "./components/ThemeCustomisation";
-import Visibility from "./components/Visibility";
 import { useEffect, useState } from "react";
+import DisplayMode from "./components/DisplayMode.jsx";
+import Visibility from "./components/Visibility.jsx";
+
 import * as Flags from "country-flag-icons/react/3x2";
 
 export default function WidgetPreview({ data, handleChange }) {
     const [activeDevice, setActiveDevice] = useState("desktop");
     const [scrollPosition, setScrollPosition] = useState(0);
     const widgetSettings = data?.widgetSettings || {};
+    const displayMode = widgetSettings.displayMode || "currency_code";
     const visibility = widgetSettings.visibility || { enableOnDesktop: true, enableOnMobile: true };
     const position = widgetSettings.position || "bottom_right";
     const offsetFromEdge = widgetSettings.offsetFromEdge || { horizontal: 20, vertical: 20 };
@@ -94,6 +97,9 @@ export default function WidgetPreview({ data, handleChange }) {
                         <s-stack gap="base">
                             {/* <WidgetType data={data} handleChange={handleChange} />
                             <s-divider /> */}
+                            <DisplayMode data={data} handleChange={handleChange} />
+                            <s-divider />
+
                             <Position data={data} handleChange={handleChange} />
                             <s-divider />
                             <OffsetFromEdge data={data} handleChange={handleChange} />
@@ -140,7 +146,7 @@ export default function WidgetPreview({ data, handleChange }) {
                                                                 <Flags.US />
                                                             </div>
                                                             <div className="widget_button_text">
-                                                                USD
+                                                                {displayMode === "currency_name" ? "United States Dollar" : "USD"}
                                                             </div>
                                                             <div className="widget_button_icon">
                                                                 <s-icon type="chevron-down" />
@@ -328,7 +334,7 @@ export default function WidgetPreview({ data, handleChange }) {
                                                                 <Flags.US />
                                                             </div>
                                                             <div className="widget_button_text">
-                                                                USD
+                                                                {displayMode === "currency_name" ? "United States Dollar" : "USD"}
                                                             </div>
                                                             <div className="widget_button_icon">
                                                                 <s-icon type="chevron-down" />

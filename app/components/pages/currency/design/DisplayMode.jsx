@@ -4,7 +4,7 @@ import { useState } from "react";
 import displayModeOptions from "../../../../assets/data/display_mode_options.json";
 
 export default function DisplayMode({ handleChange, data }) {
-    const { displayMode } = data.designSettings;
+    const displayMode = data?.designSettings?.displayMode || "currency_code";
     const [selectedDisplayMode, setSelectedDisplayMode] = useState(displayMode);
     const handleDisplayModeChange = (e) => {
         setSelectedDisplayMode(e.target.value);

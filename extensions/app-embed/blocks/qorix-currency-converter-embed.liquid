@@ -17,6 +17,9 @@
 {% assign active_currencies = app_data.currency_general.value.activeCurrencies %}
 {% assign iso_currencies = app_data.iso_currencies.value %}
 {% assign display_mode = app_data.currency_design.value.displayMode %}
+{% if app_data.settings_widget.value.displayMode != blank %}
+  {% assign display_mode = app_data.settings_widget.value.displayMode %}
+{% endif %}
 {% assign flag_style = app_data.currency_design.value.flagStyle %}
 {% assign show_currency_name_on_hover = app_data.currency_design.value.behavior.showCurrencyNameOnHover %}
 {% assign dark_mode_support = app_data.currency_design.value.behavior.darkModeSupport %}
