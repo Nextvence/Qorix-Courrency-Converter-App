@@ -6,7 +6,6 @@ import {
 } from "react-router";
 import { Text } from "@shopify/polaris";
 import { useEffect, useState } from "react";
-import TabButton from "../components/essentials/TabButton";
 import CustomSection from "../components/essentials/CustomSection";
 import Loader from "../components/essentials/Loader";
 import ActiveCurrencies from "../components/pages/currency/general/ActiveCurrencies.jsx";
@@ -112,7 +111,6 @@ export default function Currency() {
     exchangeMeta,
   } = loaderData;
   const fetcher = useFetcher();
-  const [activeTab, setActiveTab] = useState("general");
 
   function showSaveBar() {
     shopify.saveBar.show("save-bar");
@@ -264,38 +262,7 @@ export default function Currency() {
       </s-stack>
 
       <s-section>
-        {/* <s-grid
-          gridTemplateColumns="
-   repeat(2, 1fr)
-  "
-          gap="small"
-        > */}
-        <s-query-container>
-          <s-grid
-            gridTemplateColumns="@container (inline-size > 400px) 180px 180px, 1fr 1fr"
-            gap="base"
-          >
-            <TabButton
-              onClick={() => setActiveTab("general")}
-              isActive={activeTab === "general"}
-            >
-              General
-            </TabButton>
-            <TabButton
-              onClick={() => setActiveTab("design")}
-              isActive={activeTab === "design"}
-            >
-              Design
-            </TabButton>
-          </s-grid>
-        </s-query-container>
-        {/* this is for empty space start */}
-        <s-stack paddingBlock="large"></s-stack>
-        {/* this is for empty space end */}
-
-        {/* general section start */}
-        {activeTab === "general" && (
-          <CustomSection padding="none">
+        <CustomSection padding="none">
             <ActiveCurrencies
               handleChange={handleChange}
               data={{ generalSettings, currencies }}
@@ -310,6 +277,10 @@ export default function Currency() {
             <s-stack paddingInlineEnd="large">
               <s-divider />
             </s-stack>
+            <Behavior handleChange={handleChange} data={{ designSettings }} />
+            <s-stack paddingInlineEnd="large">
+              <s-divider />
+            </s-stack>
             <PriceDisplayFormat
               handleChange={handleChange}
               data={{ generalSettings, currencies }}
@@ -317,16 +288,6 @@ export default function Currency() {
             {/* <s-stack paddingInlineEnd="large"><s-divider /></s-stack>
                         <ExchangeRates data={{ exchangeMeta }} />*/}
           </CustomSection>
-        )}
-        {/* general section end */}
-
-        {/* design section start */}
-        {activeTab === "design" && (
-          <CustomSection padding="none">
-            <Behavior handleChange={handleChange} data={{ designSettings }} />
-          </CustomSection>
-        )}
-        {/* design section end */}
       </s-section>
     </s-page>
   );
