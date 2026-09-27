@@ -3,8 +3,10 @@ import { useRevalidator } from "react-router";
 import ProgressiveBar from "./elements/ProgressiveBar";
 import SetupGuideItem from "./elements/SetupGuideItem";
 import CopyCurrencyEmbed from "./elements/CopyCurrencyEmbed";
+import { useAppBridge } from "@shopify/app-bridge-react";
 
 export default function SetupGuide({ data, handleUpdate }) {
+  const shopify = useAppBridge();
   const { loaderData, apiKey } = data;
   const embedStatus = loaderData.embedStatus;
   const currencyFormats = loaderData.currencyFormats;
@@ -160,6 +162,57 @@ export default function SetupGuide({ data, handleUpdate }) {
     }
   }, [embedStatus, isMoneyFormatUpdated, step3Completed]);
 
+  const [verifyPhase, setVerifyPhase] = useState("idle");
+  const isVerifying = verifyPhase !== "idle";
+
+  const handleVerifyStatus = () => {
+    setVerifyPhase("starting");
+    revalidator.revalidate();
+  };
+
+  useEffect(() => {
+    if (verifyPhase === "starting") {
+      if (revalidator.state === "loading") {
+        setVerifyPhase("loading");
+      } else {
+        const timer = setTimeout(() => {
+          if (verifyPhase === "starting" && revalidator.state === "idle") {
+            setVerifyPhase("idle");
+            if (embedStatus === "ENABLED") {
+              shopify.toast.show("App embed is active and verified!", {
+                duration: 3000,
+              });
+            } else {
+              shopify.toast.show(
+                "Please enable the app embed in your theme editor first",
+                {
+                  duration: 4000,
+                  isError: true,
+                },
+              );
+            }
+          }
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    } else if (verifyPhase === "loading" && revalidator.state === "idle") {
+      setVerifyPhase("idle");
+      if (embedStatus === "ENABLED") {
+        shopify.toast.show("App embed is active and verified!", {
+          duration: 3000,
+        });
+      } else {
+        shopify.toast.show(
+          "Please enable the app embed in your theme editor first",
+          {
+            duration: 4000,
+            isError: true,
+          },
+        );
+      }
+    }
+  }, [verifyPhase, revalidator.state, embedStatus, shopify]);
+
   const url = `https://${loaderData?.shop?.myshopifyDomain}/admin/themes/current/editor?context=apps&template=index&activateAppId=${apiKey}/qorix-currency-converter-embed`;
   return (
     <>
@@ -187,10 +240,8 @@ export default function SetupGuide({ data, handleUpdate }) {
                 {embedStatus !== "ENABLED" && (
                   <s-button
                     variant="secondary"
-                    loading={
-                      revalidator.state === "loading" ? "true" : undefined
-                    }
-                    onClick={() => revalidator.revalidate()}
+                    loading={isVerifying ? "true" : undefined}
+                    onClick={handleVerifyStatus}
                   >
                     Verify Status
                   </s-button>
