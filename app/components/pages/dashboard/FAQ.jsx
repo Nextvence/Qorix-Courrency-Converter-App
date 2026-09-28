@@ -3,13 +3,18 @@ import FaqItem from "./elements/FaqItem"
 
 export default function FAQ({ data }) {
     const [open, setOpen] = useState("item1");
+
+    const handleToggle = (id) => {
+        setOpen((prev) => (prev === id ? null : id));
+    };
+
     return (
         <s-section>
             <s-heading>Frequently asked questions</s-heading>
             <s-stack>
                 <FaqItem
                     isOpen={open === "item1"}
-                    onToggle={() => setOpen("item1")}
+                    onToggle={() => handleToggle("item1")}
                     title="Why isn't the currency switcher showing on my store?"
                 >
                     <s-paragraph>
@@ -18,7 +23,7 @@ export default function FAQ({ data }) {
                 </FaqItem>
                 <FaqItem
                     isOpen={open === "item2"}
-                    onToggle={() => setOpen("item2")}
+                    onToggle={() => handleToggle("item2")}
                     title="Why aren't my product prices converting?"
                 >
                     <s-paragraph>
@@ -27,7 +32,7 @@ export default function FAQ({ data }) {
                 </FaqItem>
                 <FaqItem
                     isOpen={open === "item3"}
-                    onToggle={() => setOpen("item3")}
+                    onToggle={() => handleToggle("item3")}
                     title="How often do exchange rates update?"
                 >
                     <s-paragraph>
@@ -36,7 +41,7 @@ export default function FAQ({ data }) {
                 </FaqItem>
                 <FaqItem
                     isOpen={open === "item4"}
-                    onToggle={() => setOpen("item4")}
+                    onToggle={() => handleToggle("item4")}
                     title="Can I control which pages the widget appears on?"
                     bordered={false}
                 >

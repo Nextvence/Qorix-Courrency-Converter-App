@@ -17,7 +17,13 @@
 {% assign active_currencies = app_data.currency_general.value.activeCurrencies %}
 {% assign iso_currencies = app_data.iso_currencies.value %}
 {% assign display_mode = app_data.currency_design.value.displayMode %}
+{% if app_data.settings_widget.value.displayMode != blank %}
+  {% assign display_mode = app_data.settings_widget.value.displayMode %}
+{% endif %}
 {% assign flag_style = app_data.currency_design.value.flagStyle %}
+{% if app_data.settings_widget.value.flagStyle != blank %}
+  {% assign flag_style = app_data.settings_widget.value.flagStyle %}
+{% endif %}
 {% assign show_currency_name_on_hover = app_data.currency_design.value.behavior.showCurrencyNameOnHover %}
 {% assign dark_mode_support = app_data.currency_design.value.behavior.darkModeSupport %}
 {% assign location_detection = app_data.currency_general.value.locationDetection %}
@@ -1032,6 +1038,13 @@
     --w-text-color: {{ theme_customisation.textColor }};
     --w-hover-color: {{ theme_customisation.hoverColor }};
     --w-bg-hover: {{ theme_customisation.hoverBackground }};
+    {% if theme_customisation.shadow == "subtle" %}
+    --w-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    {% elsif theme_customisation.shadow == "strong" %}
+    --w-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    {% else %}
+    --w-shadow: none;
+    {% endif %}
     --w-dark-bg: #181818;
     --w-dark-border-color: #3a3a3a;
     --w-dark-text-color: #f5f5f5;
