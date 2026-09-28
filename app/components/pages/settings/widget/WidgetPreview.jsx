@@ -3,14 +3,19 @@ import WidgetType from "./components/WidgetType";
 import Position from "./components/Position";
 import OffsetFromEdge from "./components/OffsetFromEdge";
 import ThemeCustomisation from "./components/ThemeCustomisation";
-import Visibility from "./components/Visibility";
 import { useEffect, useState } from "react";
+import DisplayMode from "./components/DisplayMode.jsx";
+import FlagStyle from "./components/FlagStyle.jsx";
+import Visibility from "./components/Visibility.jsx";
+
 import * as Flags from "country-flag-icons/react/3x2";
 
 export default function WidgetPreview({ data, handleChange }) {
     const [activeDevice, setActiveDevice] = useState("desktop");
     const [scrollPosition, setScrollPosition] = useState(0);
     const widgetSettings = data?.widgetSettings || {};
+    const displayMode = widgetSettings.displayMode || "currency_code";
+    const flagStyle = widgetSettings.flagStyle || "2d_flag";
     const visibility = widgetSettings.visibility || { enableOnDesktop: true, enableOnMobile: true };
     const position = widgetSettings.position || "bottom_right";
     const offsetFromEdge = widgetSettings.offsetFromEdge || { horizontal: 20, vertical: 20 };
@@ -26,6 +31,17 @@ export default function WidgetPreview({ data, handleChange }) {
         shadow: "none",
         ...(widgetSettings.themeCustomisation || {})
     };
+    const getShadowStyle = (shadowType) => {
+        switch (shadowType) {
+            case "subtle":
+                return "0 2px 8px rgba(0, 0, 0, 0.15)";
+            case "strong":
+                return "0 4px 16px rgba(0, 0, 0, 0.25)";
+            default:
+                return "none";
+        }
+    };
+    const shadowCss = getShadowStyle(themeCustomisation.shadow);
     useEffect(() => {
         const handleScroll = () => {
             setScrollPosition(window.scrollY);
@@ -83,6 +99,11 @@ export default function WidgetPreview({ data, handleChange }) {
                         <s-stack gap="base">
                             {/* <WidgetType data={data} handleChange={handleChange} />
                             <s-divider /> */}
+                            <DisplayMode data={data} handleChange={handleChange} />
+                            <s-divider />
+                            <FlagStyle data={data} handleChange={handleChange} />
+                            <s-divider />
+
                             <Position data={data} handleChange={handleChange} />
                             <s-divider />
                             <OffsetFromEdge data={data} handleChange={handleChange} />
@@ -125,11 +146,17 @@ export default function WidgetPreview({ data, handleChange }) {
                                                 <div id="preview-desktop">
                                                     <div className="widget_buttons_wrapper widget_single">
                                                         <div className="widget_button">
-                                                            <div className="widget_button_flag">
-                                                                <Flags.US />
-                                                            </div>
+                                                            {flagStyle !== "no_flag" && (
+                                                                <div className="widget_button_flag">
+                                                                    {flagStyle === "3d_flag" ? (
+                                                                        <img src="https://flags.sifatahmed.info/us/flag.gif" alt="USD" width="20" height="14" style={{ borderRadius: "2px" }} />
+                                                                    ) : (
+                                                                        <Flags.US />
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                             <div className="widget_button_text">
-                                                                USD
+                                                                {displayMode === "currency_name" ? "United States Dollar" : "USD"}
                                                             </div>
                                                             <div className="widget_button_icon">
                                                                 <s-icon type="chevron-down" />
@@ -247,8 +274,15 @@ export default function WidgetPreview({ data, handleChange }) {
                                             border: 1px solid ${themeCustomisation.borderColor};
                                             border-radius: ${themeCustomisation.borderRadius}px;
                                             background: ${themeCustomisation.backgroundColor};
+                                            color: ${themeCustomisation.textColor};
+                                            box-shadow: ${shadowCss};
                                             padding: 5px 10px;
                                             cursor: pointer;
+                                            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                                        }
+                                        .widget_button:hover{
+                                            background: ${themeCustomisation.hoverBackground} !important;
+                                            color: ${themeCustomisation.hoverColor} !important;
                                         }
                                         .widget_button_flag{
                                             width: 20px;
@@ -259,6 +293,11 @@ export default function WidgetPreview({ data, handleChange }) {
                                         .widget_button_text{
                                             font-size: 14px;
                                             line-height: 20px;
+                                            color: ${themeCustomisation.textColor};
+                                            transition: color 0.2s ease;
+                                        }
+                                        .widget_button:hover .widget_button_text{
+                                            color: ${themeCustomisation.hoverColor} !important;
                                         }
                                         .widget_button_icon{
                                             width: fit-content;
@@ -266,6 +305,19 @@ export default function WidgetPreview({ data, handleChange }) {
                                             display: flex;
                                             align-items: center;
                                             margin-left: 5px;
+                                            color: ${themeCustomisation.textColor};
+                                            transition: color 0.2s ease;
+                                        }
+                                        .widget_button_icon s-icon,
+                                        .widget_button_icon s-icon *{
+                                            color: inherit !important;
+                                            fill: currentColor !important;
+                                        }
+                                        .widget_button:hover .widget_button_icon,
+                                        .widget_button:hover .widget_button_icon s-icon,
+                                        .widget_button:hover .widget_button_icon s-icon *{
+                                            color: ${themeCustomisation.hoverColor} !important;
+                                            fill: ${themeCustomisation.hoverColor} !important;
                                         }
                                         @media(max-width: 804px){
                                             #desktop-preview-frame .background{
@@ -288,11 +340,17 @@ export default function WidgetPreview({ data, handleChange }) {
                                                 <div id="preview-mobile">
                                                     <div className="widget_buttons_wrapper widget_single">
                                                         <div className="widget_button">
-                                                            <div className="widget_button_flag">
-                                                                <Flags.US />
-                                                            </div>
+                                                            {flagStyle !== "no_flag" && (
+                                                                <div className="widget_button_flag">
+                                                                    {flagStyle === "3d_flag" ? (
+                                                                        <img src="https://flags.sifatahmed.info/us/flag.gif" alt="USD" width="20" height="14" style={{ borderRadius: "2px" }} />
+                                                                    ) : (
+                                                                        <Flags.US />
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                             <div className="widget_button_text">
-                                                                USD
+                                                                {displayMode === "currency_name" ? "United States Dollar" : "USD"}
                                                             </div>
                                                             <div className="widget_button_icon">
                                                                 <s-icon type="chevron-down" />
@@ -411,8 +469,15 @@ export default function WidgetPreview({ data, handleChange }) {
                                             border: 1px solid ${themeCustomisation.borderColor};
                                             border-radius: ${themeCustomisation.borderRadius}px;
                                             background: ${themeCustomisation.backgroundColor};
+                                            color: ${themeCustomisation.textColor};
+                                            box-shadow: ${shadowCss};
                                             padding: 5px 10px;
                                             cursor: pointer;
+                                            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                                        }
+                                        .widget_button:hover{
+                                            background: ${themeCustomisation.hoverBackground} !important;
+                                            color: ${themeCustomisation.hoverColor} !important;
                                         }
                                         .widget_button_flag{
                                             width: 20px;
@@ -423,6 +488,11 @@ export default function WidgetPreview({ data, handleChange }) {
                                         .widget_button_text{
                                             font-size: 14px;
                                             line-height: 20px;
+                                            color: ${themeCustomisation.textColor};
+                                            transition: color 0.2s ease;
+                                        }
+                                        .widget_button:hover .widget_button_text{
+                                            color: ${themeCustomisation.hoverColor} !important;
                                         }
                                         .widget_button_icon{
                                             width: fit-content;
@@ -430,6 +500,19 @@ export default function WidgetPreview({ data, handleChange }) {
                                             display: flex;
                                             align-items: center;
                                             margin-left: 5px;
+                                            color: ${themeCustomisation.textColor};
+                                            transition: color 0.2s ease;
+                                        }
+                                        .widget_button_icon s-icon,
+                                        .widget_button_icon s-icon *{
+                                            color: inherit !important;
+                                            fill: currentColor !important;
+                                        }
+                                        .widget_button:hover .widget_button_icon,
+                                        .widget_button:hover .widget_button_icon s-icon,
+                                        .widget_button:hover .widget_button_icon s-icon *{
+                                            color: ${themeCustomisation.hoverColor} !important;
+                                            fill: ${themeCustomisation.hoverColor} !important;
                                         }
                                         @media(max-width: 804px){
                                             #mobile-preview-frame .background{

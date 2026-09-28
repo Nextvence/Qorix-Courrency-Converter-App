@@ -22,6 +22,7 @@ import { useEffect, useRef, useState } from "react";
 import { getBillingMode } from "../utils/hybridBilling.server";
 import ReviewWidget from "../components/essentials/reviewModel.jsx";
 import { Text } from "@shopify/polaris";
+import { useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 export const loader = async ({ request }) => {
   const { getAnalyticsSummary } = await import("../utils/analytics.server");
   const { admin } = await authenticate.admin(request);
@@ -181,14 +182,19 @@ export default function Index() {
   const loaderData = useLoaderData();
   const revalidator = useRevalidator();
   const toggleFetcher = useFetcher();
+  const shopify = useAppBridge();
 
   const [isAppEnabled, setIsAppEnabled] = useState(
     loaderData.embedStatus == "ENABLED",
   );
   const activationUrl = `https://${loaderData?.shop?.myshopifyDomain}/admin/themes/current/editor?context=apps&template=index&activateAppId=${apiKey}/qorix-currency-converter-embed`;
-  const optimisticEnableCurrency = toggleFetcher.formData
-    ? toggleFetcher.formData.get("enableCurrency") === "true"
-    : loaderData.featureStatus.enableCurrency;
+  
+  const savedEnableCurrency = Boolean(loaderData.featureStatus?.enableCurrency);
+  const [currentEnableCurrency, setCurrentEnableCurrency] = useState(savedEnableCurrency);
+
+  useEffect(() => {
+    setCurrentEnableCurrency(Boolean(loaderData.featureStatus?.enableCurrency));
+  }, [loaderData.featureStatus?.enableCurrency]);
 
   useEffect(() => {
     setIsAppEnabled(loaderData.embedStatus == "ENABLED");
@@ -208,13 +214,29 @@ export default function Index() {
   const isTogglingCurrencyStatus = toggleFetcher.state !== "idle";
 
   const handleToggleCurrencyStatus = () => {
+    const nextValue = !currentEnableCurrency;
+    setCurrentEnableCurrency(nextValue);
+    if (nextValue !== savedEnableCurrency) {
+      shopify.saveBar.show("save-bar");
+    } else {
+      shopify.saveBar.hide("save-bar");
+    }
+  };
+
+  const handleSave = () => {
     toggleFetcher.submit(
       {
         actionType: "toggle_currency_status",
-        enableCurrency: String(!optimisticEnableCurrency),
+        enableCurrency: String(currentEnableCurrency),
       },
       { method: "post" },
     );
+    shopify.saveBar.hide("save-bar");
+  };
+
+  const handleDiscard = () => {
+    setCurrentEnableCurrency(savedEnableCurrency);
+    shopify.saveBar.hide("save-bar");
   };
 
   const prevToggleDataRef = useRef();
@@ -230,13 +252,25 @@ export default function Index() {
           toggleFetcher.data.enableCurrency
             ? "Currency conversion on"
             : "Currency conversion off",
+          { duration: 2000 },
         );
+        shopify.saveBar.hide("save-bar");
       }
     }
-  }, [toggleFetcher.state, toggleFetcher.data]);
+  }, [toggleFetcher.state, toggleFetcher.data, shopify]);
   const planName = loaderData?.billingPlanDisplayName || "Free Plan";
   return (
     <s-page heading={`${appName}`}>
+      <SaveBar id="save-bar">
+        <button
+          variant="primary"
+          onClick={handleSave}
+          loading={isTogglingCurrencyStatus ? "" : undefined}
+        >
+          Save
+        </button>
+        <button onClick={handleDiscard}>Discard</button>
+      </SaveBar>
       <s-stack
         direction="inline"
         alignItems="center"
@@ -358,18 +392,18 @@ export default function Index() {
         isAppEnabled={isAppEnabled}
         activationUrl={activationUrl}
         onVerify={handleVerifyEmbedStatus}
-        isVerifying={isVerifyingEmbedStatus}
+        isVerifying={isVerifyingEmbedStatus}             
       /> */}
       {/* app embed status section end */}
       <ReviewWidget />
       {/* analytics section start */}
-      <br></br>
+ <p style={{ marginBlock: "16px" }}></p>
       <Analytics
         data={{
           analytics: loaderData.analytics,
           featureStatus: {
             ...loaderData.featureStatus,
-            enableCurrency: optimisticEnableCurrency,
+            enableCurrency: currentEnableCurrency,
           },
         }}
         onToggleCurrencyStatus={handleToggleCurrencyStatus}

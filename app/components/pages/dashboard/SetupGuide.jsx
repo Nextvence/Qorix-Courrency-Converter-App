@@ -3,8 +3,10 @@ import { useRevalidator } from "react-router";
 import ProgressiveBar from "./elements/ProgressiveBar";
 import SetupGuideItem from "./elements/SetupGuideItem";
 import CopyCurrencyEmbed from "./elements/CopyCurrencyEmbed";
+import { useAppBridge } from "@shopify/app-bridge-react";
 
 export default function SetupGuide({ data, handleUpdate }) {
+  const shopify = useAppBridge();
   const { loaderData, apiKey } = data;
   const embedStatus = loaderData.embedStatus;
   const currencyFormats = loaderData.currencyFormats;
@@ -79,23 +81,48 @@ export default function SetupGuide({ data, handleUpdate }) {
   };
 
   useEffect(() => {
-    if (checkPhase === "starting" && revalidator.state === "loading") {
-      setCheckPhase("loading");
-    } else if (checkPhase === "loading" && revalidator.state === "idle") {
-      setCheckPhase("idle");
-      if (
-        decodeHtml(currencyFormats?.currencyFormats?.moneyFormat) ===
+    const isMatched =
+      decodeHtml(currencyFormats?.currencyFormats?.moneyFormat) ===
         defaultMoneyFormat &&
-        decodeHtml(
-          currencyFormats?.currencyFormats?.moneyWithCurrencyFormat,
-        ) === defaultMoneyWithCurrencyFormat
-      ) {
+      decodeHtml(
+        currencyFormats?.currencyFormats?.moneyWithCurrencyFormat,
+      ) === defaultMoneyWithCurrencyFormat;
+
+    const notifyResult = () => {
+      if (isMatched) {
         setIsMoneyFormatUpdated(true);
         setIsActivated("item3");
+        shopify.toast.show("Money format verified and updated successfully!", {
+          duration: 3000,
+        });
       } else {
         setIsMoneyFormatUpdated(false);
+        shopify.toast.show(
+          "Please update your money format first",
+          {
+            duration: 3500,
+            isError: true,
+          },
+        );
       }
       setHasCheckedMoneyFormat(true);
+    };
+
+    if (checkPhase === "starting") {
+      if (revalidator.state === "loading") {
+        setCheckPhase("loading");
+      } else {
+        const timer = setTimeout(() => {
+          if (checkPhase === "starting" && revalidator.state === "idle") {
+            setCheckPhase("idle");
+            notifyResult();
+          }
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    } else if (checkPhase === "loading" && revalidator.state === "idle") {
+      setCheckPhase("idle");
+      notifyResult();
     }
   }, [
     checkPhase,
@@ -103,6 +130,7 @@ export default function SetupGuide({ data, handleUpdate }) {
     currencyFormats,
     defaultMoneyFormat,
     defaultMoneyWithCurrencyFormat,
+    shopify,
   ]);
   // handling money format end
 
@@ -139,14 +167,31 @@ export default function SetupGuide({ data, handleUpdate }) {
   };
 
   useEffect(() => {
-    if (step3CheckPhase === "starting" && revalidator.state === "loading") {
-      setStep3CheckPhase("loading");
-    } else if (step3CheckPhase === "loading" && revalidator.state === "idle") {
-      setStep3CheckPhase("idle");
+    const notifySuccess = () => {
       localStorage.setItem("step3Completed", "true");
       setStep3Completed(true);
+      shopify.toast.show("Currencies selected successfully!", {
+        duration: 3000,
+      });
+    };
+
+    if (step3CheckPhase === "starting") {
+      if (revalidator.state === "loading") {
+        setStep3CheckPhase("loading");
+      } else {
+        const timer = setTimeout(() => {
+          if (step3CheckPhase === "starting" && revalidator.state === "idle") {
+            setStep3CheckPhase("idle");
+            notifySuccess();
+          }
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    } else if (step3CheckPhase === "loading" && revalidator.state === "idle") {
+      setStep3CheckPhase("idle");
+      notifySuccess();
     }
-  }, [step3CheckPhase, revalidator.state]);
+  }, [step3CheckPhase, revalidator.state, shopify]);
 
   useEffect(() => {
     if (embedStatus !== "ENABLED") {
@@ -159,6 +204,57 @@ export default function SetupGuide({ data, handleUpdate }) {
       setIsActivated("item4");
     }
   }, [embedStatus, isMoneyFormatUpdated, step3Completed]);
+
+  const [verifyPhase, setVerifyPhase] = useState("idle");
+  const isVerifying = verifyPhase !== "idle";
+
+  const handleVerifyStatus = () => {
+    setVerifyPhase("starting");
+    revalidator.revalidate();
+  };
+
+  useEffect(() => {
+    if (verifyPhase === "starting") {
+      if (revalidator.state === "loading") {
+        setVerifyPhase("loading");
+      } else {
+        const timer = setTimeout(() => {
+          if (verifyPhase === "starting" && revalidator.state === "idle") {
+            setVerifyPhase("idle");
+            if (embedStatus === "ENABLED") {
+              shopify.toast.show("App embed is active and verified!", {
+                duration: 3000,
+              });
+            } else {
+              shopify.toast.show(
+                "Please enable the app embed in your theme editor first",
+                {
+                  duration: 4000,
+                  isError: true,
+                },
+              );
+            }
+          }
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    } else if (verifyPhase === "loading" && revalidator.state === "idle") {
+      setVerifyPhase("idle");
+      if (embedStatus === "ENABLED") {
+        shopify.toast.show("App embed is active and verified!", {
+          duration: 3000,
+        });
+      } else {
+        shopify.toast.show(
+          "Please enable the app embed in your theme editor first",
+          {
+            duration: 4000,
+            isError: true,
+          },
+        );
+      }
+    }
+  }, [verifyPhase, revalidator.state, embedStatus, shopify]);
 
   const url = `https://${loaderData?.shop?.myshopifyDomain}/admin/themes/current/editor?context=apps&template=index&activateAppId=${apiKey}/qorix-currency-converter-embed`;
   return (
@@ -187,10 +283,8 @@ export default function SetupGuide({ data, handleUpdate }) {
                 {embedStatus !== "ENABLED" && (
                   <s-button
                     variant="secondary"
-                    loading={
-                      revalidator.state === "loading" ? "true" : undefined
-                    }
-                    onClick={() => revalidator.revalidate()}
+                    loading={isVerifying ? "true" : undefined}
+                    onClick={handleVerifyStatus}
                   >
                     Verify Status
                   </s-button>
@@ -292,7 +386,7 @@ export default function SetupGuide({ data, handleUpdate }) {
                 )}
                 <s-button
                   variant="secondary"
-                  loading={isCheckingMoneyFormat}
+                  loading={isCheckingMoneyFormat ? "true" : undefined}
                   onClick={handleCheckMoneyFormat}
                   disabled={isMoneyFormatUpdated}
                 >
@@ -323,7 +417,7 @@ export default function SetupGuide({ data, handleUpdate }) {
               </s-stack>
               <s-button
                 onClick={handleStep3Completed}
-                loading={step3CheckPhase !== "idle"}
+                loading={step3CheckPhase !== "idle" ? "true" : undefined}
                 disabled={step3Completed}
                 variant="secondary"
               >

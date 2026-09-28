@@ -116,8 +116,22 @@
     overflow: hidden;
     border: 1px solid var(--w-border-color) !important;
     border-radius: var(--w-border-radius) !important;
+    box-shadow: var(--w-shadow, none) !important;
     justify-content: space-between;
     min-width: 130px;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+[data-currency-converter-widget] .currency-widget__button:hover,
+[data-currency-converter-widget] .currency-widget__button.active {
+    background-color: var(--w-bg-hover) !important;
+}
+[data-currency-converter-widget] .currency-widget__button:hover *,
+[data-currency-converter-widget] .currency-widget__button.active * {
+    color: var(--w-hover-color) !important;
+}
+[data-currency-converter-widget] .currency-widget__button:hover svg path,
+[data-currency-converter-widget] .currency-widget__button.active svg path {
+    stroke: var(--w-hover-color) !important;
 }
 [data-currency-converter-widget] .currency-widget__button .currency-widget__button-content {
     display: flex;
@@ -190,8 +204,12 @@
 [data-currency-converter-widget] .currency-widget__dropdown ul li:hover,
 [data-currency-converter-widget] .currency-widget__dropdown ul li.active{
     background-color: var(--w-bg-hover) !important;
+    color: var(--w-hover-color) !important;
 }
 
-[data-currency-converter-widget] .currency-widget__dropdown ul li:hover span{
+[data-currency-converter-widget] .currency-widget__dropdown ul li:hover span,
+[data-currency-converter-widget] .currency-widget__dropdown ul li:hover *,
+[data-currency-converter-widget] .currency-widget__dropdown ul li.active span,
+[data-currency-converter-widget] .currency-widget__dropdown ul li.active *{
     color: var(--w-hover-color) !important;
 }
