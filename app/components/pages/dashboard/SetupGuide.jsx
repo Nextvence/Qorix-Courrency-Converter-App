@@ -100,8 +100,7 @@ export default function SetupGuide({ data, handleUpdate }) {
         shopify.toast.show(
           "Please update your money format first",
           {
-            duration: 3500,
-            isError: true,
+            duration: 3500
           },
         );
       }
@@ -229,8 +228,7 @@ export default function SetupGuide({ data, handleUpdate }) {
               shopify.toast.show(
                 "Please enable the app embed in your theme editor first",
                 {
-                  duration: 4000,
-                  isError: true,
+                  duration: 4000
                 },
               );
             }
@@ -248,8 +246,7 @@ export default function SetupGuide({ data, handleUpdate }) {
         shopify.toast.show(
           "Please enable the app embed in your theme editor first",
           {
-            duration: 4000,
-            isError: true,
+            duration: 4000
           },
         );
       }
